@@ -4,17 +4,17 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>OmniFlux Player</title>
-  <meta name="description" content="A free, open-source media player for Windows. Movies, music, Google Drive and YouTube in one library, powered by mpv." />
+  <meta name="description" content="Free and open source for Windows. Find any movie or series and see where it streams, watch trailers, and play your own files, Google Drive, YouTube and music — all in one app." />
   <meta name="theme-color" content="#08090c" />
   <link rel="icon" href="assets/favicon.png" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="OmniFlux Player — every movie, song and Drive folder in one player" />
-  <meta property="og:description" content="Free and open source for Windows. Plays every format with mpv, turns your folders and Google Drive into a poster library, and searches all your music at once." />
+  <meta property="og:title" content="OmniFlux Player — everything you watch and listen to, in one app" />
+  <meta property="og:description" content="Find any movie or series and see which platform streams it. Play your files, Google Drive, YouTube and music. Free and open source for Windows." />
   <meta property="og:image" content="https://5645hm-a11y.github.io/omniflux-player/assets/og.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     /*
      * האתר לבוש בשפה של התוכנה עצמה — אותה קרקע כהה, אותו סגול, אותן
@@ -34,11 +34,10 @@
       --amber: #f4b860;
       --line: rgba(255, 255, 255, 0.08);
       --line-strong: rgba(255, 255, 255, 0.16);
-      --display: 'Plus Jakarta Sans', 'Rubik', system-ui, sans-serif;
-      --sans: 'Inter', 'Rubik', 'Segoe UI', system-ui, sans-serif;
+      --display: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
       --radius: 20px;
     }
-    :lang(he) { --display: 'Rubik', system-ui, sans-serif; --sans: 'Rubik', system-ui, sans-serif; }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
@@ -111,7 +110,6 @@
       font-family: var(--display); font-weight: 800; letter-spacing: -0.035em;
       font-size: clamp(40px, 6.4vw, 78px); line-height: 1.02; margin: 24px auto 20px; max-width: 980px;
     }
-    :lang(he) h1 { letter-spacing: -0.01em; line-height: 1.1; }
     h1 .grad { background: linear-gradient(100deg, #fff 10%, var(--violet-bright) 55%, var(--mint) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
     .lede { font-size: clamp(17px, 2vw, 20px); color: var(--ink-2); max-width: 720px; margin: 0 auto 34px; }
     .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
@@ -127,7 +125,6 @@
     /* ---------- sources strip ---------- */
     .sources { padding: 56px 0 24px; text-align: center; }
     .eyebrow { font-size: 12.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
-    :lang(he) .eyebrow { letter-spacing: 0.02em; }
     .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 18px; }
     .chip {
       display: inline-flex; align-items: center; gap: 9px; padding: 9px 16px; border-radius: 999px;
@@ -135,13 +132,14 @@
     }
     .chip i { width: 9px; height: 9px; border-radius: 50%; display: block; }
     .chip small { color: var(--ink-3); font-weight: 400; }
+    .chips + .eyebrow { margin-top: 30px; }
+    .chip.plat { background: transparent; }
 
     /* ---------- sections ---------- */
     section { padding: 88px 0; }
     .head { max-width: 720px; margin-bottom: 44px; }
     .head.center { margin-inline: auto; text-align: center; }
     h2 { font-family: var(--display); font-weight: 800; font-size: clamp(30px, 4vw, 46px); line-height: 1.08; letter-spacing: -0.03em; margin: 12px 0 14px; }
-    :lang(he) h2 { letter-spacing: -0.01em; line-height: 1.15; }
     .head p { color: var(--ink-2); font-size: 17.5px; margin: 0; }
 
     /* ---------- features ---------- */
@@ -165,6 +163,9 @@
     /* ---------- music split ---------- */
     .split { display: grid; grid-template-columns: 1fr 1.25fr; gap: 56px; align-items: center; }
     @media (max-width: 960px) { .split { grid-template-columns: 1fr; gap: 36px; } }
+    .split.rev { grid-template-columns: 1.55fr 1fr; gap: 48px; }
+    .split.rev > :first-child { order: 2; }
+    @media (max-width: 960px) { .split.rev { grid-template-columns: 1fr; } .split.rev > :first-child { order: 0; } }
     .ticks { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 16px; }
     .ticks li { display: grid; grid-template-columns: 26px 1fr; gap: 12px; color: var(--ink-2); }
     .ticks li b { color: var(--ink); font-weight: 600; display: block; }
@@ -242,6 +243,7 @@
     <div class="wrap">
       <a class="brand" href="#top"><img src="assets/icon.png" alt="" /><span>Omni<span class="fx">Flux</span></span></a>
       <div class="links">
+        <a href="#movies" data-t="navMovies">Movies &amp; series</a>
         <a href="#features" data-t="navFeatures">Features</a>
         <a href="#music" data-t="navMusic">Music</a>
         <a href="#screens" data-t="navScreens">Screenshots</a>
@@ -250,7 +252,7 @@
       </div>
       <div class="lang" role="group" aria-label="Language">
         <button data-lang="en" aria-pressed="true">EN</button>
-        <button data-lang="he" aria-pressed="false">עב</button>
+        <button data-lang="fr" aria-pressed="false">FR</button>
       </div>
       <a class="btn btn-primary btn-sm dl" href="https://github.com/5645hm-a11y/omniflux-player-releases/releases/latest" data-t="navDownload">Download</a>
     </div>
@@ -259,8 +261,8 @@
   <header class="hero" id="top">
     <div class="wrap">
       <span class="pill"><span class="dot"></span><span data-t="pill">Free · Open source · Windows 10 &amp; 11</span></span>
-      <h1 data-t="h1" data-html>Every movie, song and Drive folder.<br /><span class="grad">One player.</span></h1>
-      <p class="lede" data-t="lede">OmniFlux plays every format with mpv, turns your folders and Google Drive into a poster library, and searches your computer, YouTube, Deezer and Spotify from one search box.</p>
+      <h1 data-t="h1" data-html>Everything you watch and listen to.<br /><span class="grad">One app.</span></h1>
+      <p class="lede" data-t="lede">Find any movie or series and see instantly which streaming platform has it. Watch the trailer, save it to your list — or play your own files, Google Drive, YouTube and music right here.</p>
       <div class="cta">
         <a class="btn btn-primary dl" href="https://github.com/5645hm-a11y/omniflux-player-releases/releases/latest">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5 10.5 4.4v7.1H3zm0 13 7.5 1.1v-7H3zm8.5 1.3L21 21v-8.5h-9.5zm0-15.6v7.3H21V3z"/></svg>
@@ -277,7 +279,19 @@
   </header>
 
   <div class="sources wrap">
-    <div class="eyebrow" data-t="plays">Plays from</div>
+    <div class="eyebrow" data-t="searchAcross">One search across the platforms</div>
+    <div class="chips">
+      <span class="chip plat"><i style="background:#e50914"></i>Netflix</span>
+      <span class="chip plat"><i style="background:#00a8e1"></i>Prime Video</span>
+      <span class="chip plat"><i style="background:#113ccf"></i>Disney+</span>
+      <span class="chip plat"><i style="background:#002be7"></i>Max</span>
+      <span class="chip plat"><i style="background:#f5f5f7"></i>Apple TV+</span>
+      <span class="chip plat"><i style="background:#0064ff"></i>Paramount+</span>
+      <span class="chip plat"><i style="background:#f2f3f5"></i>Canal+</span>
+      <span class="chip plat"><i style="background:#f47521"></i>Crunchyroll</span>
+      <span class="chip plat"><small data-t="andMore">and many more, for your country</small></span>
+    </div>
+    <div class="eyebrow" data-t="plays">And plays from</div>
     <div class="chips">
       <span class="chip"><i style="background:#a594ff"></i><span data-t="srcLocal">Your computer</span></span>
       <span class="chip"><i style="background:#4285f4"></i>Google Drive</span>
@@ -287,11 +301,32 @@
     </div>
   </div>
 
+  <section id="movies">
+    <div class="wrap">
+      <div class="split rev">
+        <div class="reveal">
+          <div class="eyebrow" data-t="movEyebrow">Movies &amp; series</div>
+          <h2 data-t="movTitle">Know where to watch — before opening five apps.</h2>
+          <p class="lede" style="margin:0;text-align:start" data-t="movLede">Type a title once. OmniFlux searches your own library and every streaming platform in your country, and tells you where it's included, where to rent it and where to buy it.</p>
+          <ul class="ticks">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span><b data-t="v1t">Your subscriptions first</b><span data-t="v1p">Tick the services you pay for, and titles included in them are marked and shown first.</span></span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span><b data-t="v2t">What's trending, with trailers</b><span data-t="v2p">A home screen with this week's movies and series, trailers that play in the app, cast and ratings.</span></span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span><b data-t="v3t">My list</b><span data-t="v3p">Save anything you want to watch later — from any platform, or from your own files.</span></span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span><b data-t="v4t">Already yours? Just play it</b><span data-t="v4p">If a title is on your computer or your Drive, it comes first, with a Play button.</span></span></li>
+          </ul>
+        </div>
+        <div class="stack reveal">
+          <img id="movieShot" src="assets/shots/en-search.webp" alt="Search across your library and streaming platforms" loading="lazy" width="1440" height="900" />
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="features">
     <div class="wrap">
       <div class="head reveal">
         <div class="eyebrow" data-t="featEyebrow">Why OmniFlux</div>
-        <h2 data-t="featTitle">A media player that finally knows what's in your library.</h2>
+        <h2 data-t="featTitle">And a player that plays everything you own.</h2>
         <p data-t="featLede">No codec packs, no media server, no account on our side. Point it at a folder and it does the rest.</p>
       </div>
       <div class="grid">
@@ -311,9 +346,9 @@
           <p data-t="f3p">Stream movies straight from your Drive with instant seeking. Watched parts are cached, so going back is free.</p>
         </article>
         <article class="card reveal">
-          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg></div>
-          <h3 data-t="f4t">One search for everything</h3>
-          <p data-t="f4p">Your files, Drive, YouTube, Deezer and Spotify — one box, one result per song, and you pick where it plays from.</p>
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></div>
+          <h3 data-t="f4t">A real desktop player</h3>
+          <p data-t="f4p">Picture-in-picture, equalizer, subtitle and audio sync, resume where you stopped — the details you expect.</p>
         </article>
         <article class="card reveal">
           <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 7v5c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V7z"/><path d="m9 12 2 2 4-4"/></svg></div>
@@ -322,8 +357,8 @@
         </article>
         <article class="card reveal">
           <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg></div>
-          <h3 data-t="f6t">8 languages, true RTL</h3>
-          <p data-t="f6p">English, Hebrew, Arabic, French, Spanish, German, Italian and Portuguese — with a layout that really flips.</p>
+          <h3 data-t="f6t">8 languages</h3>
+          <p data-t="f6p">English, French, Spanish, German, Italian, Portuguese, Arabic and Hebrew. Titles and summaries come in your language.</p>
         </article>
       </div>
     </div>
@@ -355,7 +390,7 @@
         <div class="tile"><img src="assets/tiles/rock.webp" alt="" loading="lazy" /><span data-t="tRock">Rock</span></div>
         <div class="tile"><img src="assets/tiles/electronic.webp" alt="" loading="lazy" /><span data-t="tElectronic">Electronic</span></div>
         <div class="tile"><img src="assets/tiles/jazz.webp" alt="" loading="lazy" /><span data-t="tJazz">Jazz</span></div>
-        <div class="tile"><img src="assets/tiles/mizrahi.webp" alt="" loading="lazy" /><span data-t="tMizrahi">Mizrahi</span></div>
+        <div class="tile"><img src="assets/tiles/pop.webp" alt="" loading="lazy" /><span>Pop</span></div>
       </div>
     </div>
   </section>
@@ -368,10 +403,11 @@
       </div>
       <div class="tabs" role="tablist">
         <button role="tab" aria-selected="true" data-shot="home" data-t="sHome">Home</button>
+        <button role="tab" aria-selected="false" data-shot="search" data-t="sFind">Search</button>
         <button role="tab" aria-selected="false" data-shot="library" data-t="sLibrary">Library</button>
         <button role="tab" aria-selected="false" data-shot="music" data-t="sMusic">Music</button>
         <button role="tab" aria-selected="false" data-shot="music-moods" data-t="sMoods">Moods &amp; genres</button>
-        <button role="tab" aria-selected="false" data-shot="music-search" data-t="sSearch">Search</button>
+        <button role="tab" aria-selected="false" data-shot="music-search" data-t="sSearch">Music search</button>
         <button role="tab" aria-selected="false" data-shot="settings" data-t="sSettings">Settings</button>
       </div>
       <div class="shot-frame gallery reveal" style="margin-top:0"><img id="galleryShot" src="assets/shots/en-home.webp" alt="" loading="lazy" width="1440" height="900" /></div>
@@ -424,6 +460,7 @@
         <details><summary data-t="q2">Windows says the installer is from an unknown publisher.</summary><p data-t="a2">OmniFlux isn't code-signed with a paid certificate yet. Click "More info" → "Run anyway". The source for every release is on GitHub.</p></details>
         <details><summary data-t="q3">Does it update itself?</summary><p data-t="a3">Yes. New versions download in the background and install the next time you close the app. Your library and settings are kept.</p></details>
         <details><summary data-t="q4">Where is my data stored?</summary><p data-t="a4">Only on your computer. Sign-ins to Google, Spotify or Deezer go directly to them; OmniFlux has no server.</p></details>
+        <details><summary data-t="q6">Can I watch Netflix or Disney+ inside OmniFlux?</summary><p data-t="a6">No — OmniFlux shows you where a title is available and opens it on that service. Streaming platforms keep their content in their own players.</p></details>
         <details><summary data-t="q5">Mac or Linux?</summary><p data-t="a5">Windows only for now. A mobile app is on the roadmap.</p></details>
       </div>
     </div>
@@ -446,52 +483,60 @@
         <a href="https://github.com/5645hm-a11y/omniflux-player/blob/main/LICENSE">GPL-3.0</a>
         <a href="https://github.com/5645hm-a11y/omniflux-player/blob/main/PRIVACY.md" data-t="fPrivacy">Privacy</a>
       </div>
-      <p class="tmdb" data-t="tmdb">This product uses the TMDB API but is not endorsed or certified by TMDB. Spotify, YouTube, Deezer and Google Drive are trademarks of their owners; OmniFlux is not affiliated with them.</p>
+      <p class="tmdb" data-t="tmdb">This product uses the TMDB API but is not endorsed or certified by TMDB. Netflix, Prime Video, Disney+, Max, Spotify, YouTube, Deezer and Google Drive are trademarks of their owners; OmniFlux is not affiliated with them.</p>
     </div>
   </footer>
 
   <script>
     const T = {
-      he: {
-        navFeatures: 'יכולות', navMusic: 'מוזיקה', navScreens: 'צילומי מסך', navSource: 'קוד פתוח', navFaq: 'שאלות', navDownload: 'הורדה',
-        pill: 'חינם · קוד פתוח · Windows 10 ו-11',
-        h1: 'כל סרט, כל שיר וכל תיקייה בדרייב.<br /><span class="grad">נגן אחד.</span>',
-        lede: 'OmniFlux מנגן כל פורמט עם mpv, הופך את התיקיות ואת הדרייב שלכם לספרייה עם כרזות, ומחפש במחשב, ב-YouTube, ב-Deezer וב-Spotify משורת חיפוש אחת.',
-        ctaDownload: 'הורדה ל-Windows', ctaSource: 'לקוד ב-GitHub',
-        plays: 'מנגן מ־', srcLocal: 'המחשב שלכם', srcPreview: 'קטעים', srcInvite: 'בהזמנה',
-        featEyebrow: 'למה OmniFlux', featTitle: 'נגן מדיה שסוף סוף יודע מה יש בספרייה שלכם.',
-        featLede: 'בלי חבילות קודקים, בלי שרת מדיה, בלי חשבון אצלנו. מצביעים על תיקייה, והוא עושה את השאר.',
-        f1t: 'מנגן הכול', f1p: 'בנוי על mpv — MKV, ‏4K HDR, ‏HEVC, ‏AV1, ‏FLAC וכל סוג כתוביות. בלי חבילות קודקים ובלי "פורמט לא נתמך".',
-        f2t: 'ספרייה אמיתית', f2p: 'שמות קבצים הופכים לכותרים עם כרזות, שנים, דירוגים, עונות ופרקים — בשפה שלכם.',
-        f3t: 'הדרייב כשרת מדיה', f3p: 'סרטים ישירות מהדרייב, עם דילוג מיידי. מה שכבר נצפה נשמר, כך שחזרה אחורה לא עולה כלום.',
-        f4t: 'חיפוש אחד לכול', f4p: 'הקבצים, הדרייב, YouTube, ‏Deezer ו-Spotify — שורה אחת, תוצאה אחת לכל שיר, ואתם בוחרים מאיפה לנגן.',
-        f5t: 'פרטיות מהיסוד', f5p: 'אין שרת, אין פרופיל, אין מעקב. ההמלצות מחושבות במחשב שלכם ולא יוצאות ממנו.',
-        f6t: '8 שפות, ימין-לשמאל אמיתי', f6p: 'עברית, ערבית, אנגלית, צרפתית, ספרדית, גרמנית, איטלקית ופורטוגזית — עם פריסה שבאמת מתהפכת.',
-        musEyebrow: 'מוזיקה', musTitle: 'כל המוזיקה שלכם. תור אחד.',
-        musLede: 'מסך בית שלומד מה אתם אוהבים — ותור שמנגן FLAC מהמחשב, אחריו סרטון מ-YouTube ואחריו קובץ מהדרייב, בלי להחליף אפליקציה.',
-        m1t: 'בוחרים את המקור', m1p: 'אותו שיר מהמחשב, מהדרייב ומ-YouTube מופיע פעם אחת — ובוחרים מאיפה לנגן.',
-        m2t: 'פלייליסטים מכל מקור', m2p: 'שומרים את התור כפלייליסט, ומערבבים בו קבצים, דרייב ו-YouTube.',
-        m3t: 'בשבילך — בלי ענן', m3p: '"להמשיך להאזין", "בשבילך" והאמנים המובילים שלכם מחושבים מההאזנה שלכם, במחשב.',
-        tFocus: 'ריכוז', tChill: 'רגוע', tEnergy: 'אנרגיה', tCinema: 'פסקולים', tElectronic: 'אלקטרוני', tJazz: "ג'אז", tRock: 'רוק', tMizrahi: 'מזרחית',
-        scrEyebrow: 'הצצה', scrTitle: 'מעוצב כמו האפליקציות שאתם אוהבים.',
-        sHome: 'בית', sLibrary: 'ספרייה', sMusic: 'מוזיקה', sMoods: 'מצבי רוח וז׳אנרים', sSearch: 'חיפוש', sSettings: 'הגדרות',
-        honEyebrow: 'בלי אותיות קטנות', honTitle: 'מה עובד היום, ומה לא.', honLede: 'חלק מהשירותים מגבילים אפליקציות עצמאיות. אנחנו מעדיפים לומר את זה מראש.',
-        n1t: 'הקבצים שלכם, הדרייב ו-YouTube', n1p: 'זמינים לכולם במלואם. YouTube מתנגן בנגן הרשמי המוטמע, כולל הפרסומות שלו.',
-        n2t: 'Deezer', n2p: 'חיפוש בכל הקטלוג וקטעים של 30 שניות, מסומנים בבירור, בלי חשבון.',
-        n3t: 'Spotify — בהזמנה בלבד', n3p: 'Spotify מגביל היום אפליקציות עצמאיות לרשימה קטנה של חשבונות מאושרים. כל שאר המקורות פתוחים לכולם.',
-        n4t: 'התחברות לדרייב', n4p: 'עד ש-Google תסיים לאמת את OmniFlux, בהתחברות מופיע מסך "אפליקציה לא מאומתת". לוחצים "מתקדם" ← "המשך". ‏OmniFlux מבקש גישת קריאה בלבד.',
-        ossEyebrow: 'קוד פתוח · GPL-3.0', ossTitle: 'נבנה בגלוי.',
-        ossP: 'כל שורה של OmniFlux נמצאת ב-GitHub. קוראים, בונים, משפרים. ‏Electron, ‏React ו-TypeScript מעל mpv, עם יותר מ-340 בדיקות אוטומטיות.',
-        ossStar: 'כוכב ב-GitHub', ossIssue: 'דיווח על תקלה',
-        faqTitle: 'שאלות',
-        q1: 'זה באמת חינם?', a1: 'כן. בלי מנוי, בלי פרסומות משלנו ובלי חשבון. הקוד ברישיון GPL-3.0.',
-        q2: 'Windows אומר שקובץ ההתקנה ממפרסם לא ידוע.', a2: 'OmniFlux עדיין אינו חתום בתעודה בתשלום. לוחצים "מידע נוסף" ← "הפעל בכל זאת". הקוד של כל גרסה נמצא ב-GitHub.',
-        q3: 'הוא מתעדכן לבד?', a3: 'כן. גרסה חדשה יורדת ברקע ומותקנת בסגירה הבאה. הספרייה וההגדרות נשמרות.',
-        q4: 'איפה נשמר המידע שלי?', a4: 'רק במחשב שלכם. ההתחברות ל-Google, ל-Spotify או ל-Deezer עוברת ישירות אליהם; ל-OmniFlux אין שרת.',
-        q5: 'Mac או Linux?', a5: 'בינתיים Windows בלבד. אפליקציה לנייד נמצאת בתוכנית.',
-        finalTitle: 'כל עולם המדיה שלכם, בלחיצה אחת.',
-        fReleases: 'גרסאות', fPrivacy: 'פרטיות',
-        tmdb: 'המוצר משתמש ב-API של TMDB, אך אינו מאושר או מוסמך על ידי TMDB. ‏Spotify, ‏YouTube, ‏Deezer ו-Google Drive הם סימנים מסחריים של בעליהם; OmniFlux אינו קשור אליהם.'
+      fr: {
+        navMovies: 'Films & séries', navFeatures: 'Fonctions', navMusic: 'Musique', navScreens: 'Captures', navSource: 'Open source', navFaq: 'FAQ', navDownload: 'Télécharger',
+        pill: 'Gratuit · Open source · Windows 10 et 11',
+        h1: 'Tout ce que vous regardez et écoutez.<br /><span class="grad">Une seule app.</span>',
+        lede: 'Trouvez n’importe quel film ou série et voyez tout de suite sur quelle plateforme il est disponible. Regardez la bande-annonce, ajoutez-le à votre liste — ou lisez vos propres fichiers, Google Drive, YouTube et votre musique, ici même.',
+        ctaDownload: 'Télécharger pour Windows', ctaSource: 'Voir sur GitHub',
+        searchAcross: 'Une recherche sur toutes les plateformes', andMore: 'et bien d’autres, selon votre pays',
+        plays: 'Et lit depuis', srcLocal: 'Votre ordinateur', srcPreview: 'extraits', srcInvite: 'sur invitation',
+        movEyebrow: 'Films & séries', movTitle: 'Sachez où regarder — sans ouvrir cinq applis.',
+        movLede: 'Tapez un titre une seule fois. OmniFlux cherche dans votre bibliothèque et sur toutes les plateformes de votre pays, et vous dit où il est inclus, où le louer et où l’acheter.',
+        v1t: 'Vos abonnements d’abord', v1p: 'Cochez les services auxquels vous êtes abonné : les titres qui y sont inclus sont signalés et affichés en premier.',
+        v2t: 'Les tendances, avec bandes-annonces', v2p: 'Un accueil avec les films et séries de la semaine, des bandes-annonces lues dans l’appli, la distribution et les notes.',
+        v3t: 'Ma liste', v3p: 'Gardez de côté tout ce que vous voulez voir — sur n’importe quelle plateforme, ou dans vos propres fichiers.',
+        v4t: 'Déjà chez vous ? Lisez-le', v4p: 'Si le titre est sur votre ordinateur ou votre Drive, il apparaît en premier, avec un bouton Lire.',
+        featEyebrow: 'Pourquoi OmniFlux', featTitle: 'Et un lecteur qui lit tout ce que vous avez.',
+        featLede: 'Pas de pack de codecs, pas de serveur multimédia, pas de compte chez nous. Indiquez un dossier, il s’occupe du reste.',
+        f1t: 'Lit absolument tout', f1p: 'Basé sur mpv : MKV, 4K HDR, HEVC, AV1, FLAC et tous les sous-titres. Sans pack de codecs, sans « format non pris en charge ».',
+        f2t: 'Une vraie bibliothèque', f2p: 'Les noms de fichiers deviennent des titres avec affiches, années, notes, saisons et épisodes — dans votre langue.',
+        f3t: 'Google Drive comme serveur multimédia', f3p: 'Regardez vos films directement depuis Drive, avec une avance rapide instantanée. Les passages déjà vus restent en cache.',
+        f4t: 'Un vrai lecteur de bureau', f4p: 'Image dans l’image, égaliseur, synchro des sous-titres et du son, reprise là où vous vous êtes arrêté — les détails qu’on attend.',
+        f5t: 'Privé par conception', f5p: 'Pas de serveur, pas de profil, pas de pistage. Les recommandations sont calculées sur votre PC et n’en sortent pas.',
+        f6t: '8 langues', f6p: 'Français, anglais, espagnol, allemand, italien, portugais, arabe et hébreu. Titres et résumés dans votre langue.',
+        musEyebrow: 'Musique', musTitle: 'Toute votre musique. Une seule file d’attente.',
+        musLede: 'Un accueil qui apprend vos goûts — et une file qui enchaîne un FLAC de votre PC, une vidéo YouTube puis un fichier Drive, sans changer d’appli.',
+        m1t: 'Choisissez la source', m1p: 'Le même titre trouvé sur votre PC, votre Drive et YouTube n’apparaît qu’une fois — vous choisissez d’où le lire.',
+        m2t: 'Vos playlists, toutes sources', m2p: 'Enregistrez la file comme playlist et mélangez-y fichiers, Drive et YouTube.',
+        m3t: 'Pour vous — sans cloud', m3p: '« Reprendre l’écoute », « Pour vous » et vos artistes préférés sont calculés à partir de votre écoute, sur votre PC.',
+        tFocus: 'Concentration', tChill: 'Détente', tEnergy: 'Énergie', tCinema: 'Bandes originales', tElectronic: 'Électro', tJazz: 'Jazz', tRock: 'Rock',
+        scrEyebrow: 'Aperçu', scrTitle: 'Pensé comme les applis que vous aimez.',
+        sHome: 'Accueil', sFind: 'Recherche', sLibrary: 'Bibliothèque', sMusic: 'Musique', sMoods: 'Ambiances & genres', sSearch: 'Recherche musique', sSettings: 'Paramètres',
+        honEyebrow: 'Sans petites lignes', honTitle: 'Ce qui marche aujourd’hui, et ce qui ne marche pas.', honLede: 'Certains services limitent les applis indépendantes. Nous préférons le dire tout de suite.',
+        n1t: 'Vos fichiers, Drive et YouTube', n1p: 'Disponibles pour tous. YouTube est lu dans le lecteur officiel intégré, publicités comprises.',
+        n2t: 'Deezer', n2p: 'Recherche dans tout le catalogue et extraits de 30 secondes, clairement signalés, sans compte.',
+        n3t: 'Spotify — sur invitation', n3p: 'Spotify limite désormais les applis indépendantes à quelques comptes approuvés. Toutes les autres sources restent ouvertes à tous.',
+        n4t: 'Connexion à Google Drive', n4p: 'Tant que Google n’a pas fini de vérifier OmniFlux, la connexion affiche un écran « application non validée ». Cliquez sur Paramètres avancés → Continuer. OmniFlux ne demande qu’un accès en lecture.',
+        ossEyebrow: 'Open source · GPL-3.0', ossTitle: 'Construit au grand jour.',
+        ossP: 'Chaque ligne d’OmniFlux est sur GitHub. Lisez-la, compilez-la, améliorez-la. Electron, React et TypeScript au-dessus de mpv, avec plus de 340 tests automatisés.',
+        ossStar: 'Une étoile sur GitHub', ossIssue: 'Signaler un problème',
+        faqTitle: 'Questions',
+        q1: 'C’est vraiment gratuit ?', a1: 'Oui. Pas d’abonnement, pas de publicité de notre part, pas de compte. Le code est sous licence GPL-3.0.',
+        q2: 'Windows dit que l’éditeur est inconnu.', a2: 'OmniFlux n’est pas encore signé avec un certificat payant. Cliquez sur « Informations complémentaires » → « Exécuter quand même ». Le code de chaque version est sur GitHub.',
+        q3: 'Se met-il à jour tout seul ?', a3: 'Oui. Les nouvelles versions se téléchargent en arrière-plan et s’installent à la prochaine fermeture. Votre bibliothèque et vos réglages sont conservés.',
+        q4: 'Où sont stockées mes données ?', a4: 'Uniquement sur votre ordinateur. Les connexions à Google, Spotify ou Deezer vont directement chez eux ; OmniFlux n’a pas de serveur.',
+        q6: 'Puis-je regarder Netflix ou Disney+ dans OmniFlux ?', a6: 'Non — OmniFlux vous montre où un titre est disponible et l’ouvre sur le service concerné. Les plateformes gardent leurs contenus dans leur propre lecteur.',
+        q5: 'Mac ou Linux ?', a5: 'Windows uniquement pour l’instant. Une appli mobile est prévue.',
+        finalTitle: 'Tout votre univers, à un clic.',
+        fReleases: 'Versions', fPrivacy: 'Confidentialité',
+        tmdb: 'Ce produit utilise l’API TMDB mais n’est ni approuvé ni certifié par TMDB. Netflix, Prime Video, Disney+, Max, Spotify, YouTube, Deezer et Google Drive sont des marques de leurs propriétaires ; OmniFlux n’y est pas affilié.'
       }
     }
     const EN = {}
@@ -505,7 +550,6 @@
       lang = next
       const dict = T[next]
       document.documentElement.lang = next
-      document.documentElement.dir = next === 'he' ? 'rtl' : 'ltr'
       document.querySelectorAll('[data-t]').forEach((el) => {
         const v = dict[el.dataset.t]
         if (v === undefined) return
@@ -514,6 +558,7 @@
       })
       document.querySelectorAll('.lang button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === next)))
       document.getElementById('heroShot').src = shotSrc('home')
+      document.getElementById('movieShot').src = shotSrc('search')
       document.getElementById('musicBack').src = shotSrc('music')
       document.getElementById('musicFront').src = shotSrc('music-search')
       document.getElementById('galleryShot').src = shotSrc(shot)
@@ -533,7 +578,7 @@
 
     let saved = null
     try { saved = localStorage.getItem('omniflux.site.lang') } catch { /* פרטי */ }
-    setLang(saved ?? ((navigator.language || '').toLowerCase().startsWith('he') ? 'he' : 'en'))
+    setLang(saved === 'fr' || saved === 'en' ? saved : ((navigator.language || '').toLowerCase().startsWith('fr') ? 'fr' : 'en'))
 
     // אנימציית כניסה עדינה; בלי IntersectionObserver הכול פשוט גלוי
     const io = 'IntersectionObserver' in window ? new IntersectionObserver((entries) => {

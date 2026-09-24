@@ -59,13 +59,15 @@ const click = (parts) =>
     return Boolean(el)
   }, parts)
 const NAV = {
-  home: ['Home', 'בית'],
-  library: ['Library', 'הספרייה'],
-  music: ['Music', 'מוזיקה'],
-  settings: ['Setting', 'הגדרות']
+  home: ['Home', 'Accueil'],
+  search: ['Search', 'Rechercher'],
+  library: ['Library', 'Biblioth'],
+  music: ['Music', 'Musique'],
+  settings: ['Setting', 'Param'],
+  more: ['More info', "Plus d'infos", 'Plus d’infos', 'Plus d']
 }
 
-for (const lang of ['en', 'he']) {
+for (const lang of ['en', 'fr']) {
   await page.evaluate((c) => window.cinema.app.setLocale(c), lang)
   await page.reload()
   await page.evaluate(() => window.cinema.library.scan())
@@ -74,10 +76,27 @@ for (const lang of ['en', 'he']) {
   await page.waitForTimeout(12000)
   await shot(`${lang}-home.png`)
 
+  // עמוד כותר: טריילר, איפה זה זמין, הרשימה שלי
+  if (await click(NAV.more)) {
+    await page.waitForTimeout(3500)
+    await shot(`${lang}-details.png`)
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(800)
+  }
+
+  // חיפוש אחד: הספרייה, ואחריה כל פלטפורמות הסטרימינג (מנוי, השכרה, רכישה)
+  await click(NAV.search)
+  await page.waitForTimeout(900)
+  await page.keyboard.type('Dune', { delay: 40 })
+  await page.waitForTimeout(5000)
+  await shot(`${lang}-search.png`)
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(600)
+
   await click(NAV.music)
   await page.waitForTimeout(5000)
   await shot(`${lang}-music.png`)
-  await page.locator('h2', { hasText: /Moods|מצבי רוח/ }).first().evaluate((el) => el.scrollIntoView({ block: 'start' }))
+  await page.locator('h2', { hasText: /Moods|Humeurs|Ambiances/ }).first().evaluate((el) => el.scrollIntoView({ block: 'start' }))
   await page.waitForTimeout(1500)
   await shot(`${lang}-music-moods.png`)
   await page.locator('header input').first().evaluate((el) => el.scrollIntoView({ block: 'start' }))
@@ -85,7 +104,7 @@ for (const lang of ['en', 'he']) {
 
   // חיפוש אחוד: המחשב + Deezer (בלי Enter — לא נוגעים במכסת YouTube)
   const box = page.locator('header input').first()
-  await box.fill(lang === 'he' ? 'Coldplay' : 'Daft Punk')
+  await box.fill(lang === 'fr' ? 'Stromae' : 'Daft Punk')
   await page.waitForTimeout(4000)
   await shot(`${lang}-music-search.png`)
   await box.fill('')
