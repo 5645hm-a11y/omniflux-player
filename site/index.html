@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OmniFlux Player</title>
+  <meta name="description" content="A free, open-source media player for Windows. Movies, music, Google Drive and YouTube in one library, powered by mpv." />
+  <meta name="theme-color" content="#08090c" />
+  <link rel="icon" href="assets/favicon.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="OmniFlux Player — every movie, song and Drive folder in one player" />
+  <meta property="og:description" content="Free and open source for Windows. Plays every format with mpv, turns your folders and Google Drive into a poster library, and searches all your music at once." />
+  <meta property="og:image" content="https://5645hm-a11y.github.io/omniflux-player/assets/og.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /*
+     * האתר לבוש בשפה של התוכנה עצמה — אותה קרקע כהה, אותו סגול, אותן
+     * כותרות. דף נחיתה בפלטה אחרת מלמד את המבקר לצפות למוצר אחר.
+     */
+    :root {
+      --canvas: #08090c;
+      --surf-1: #0f1115;
+      --surf-2: #15171d;
+      --surf-3: #1c1f27;
+      --ink: #f2f3f5;
+      --ink-2: #b3b8c2;
+      --ink-3: #868c99;
+      --violet: #7d6bf0;
+      --violet-bright: #a594ff;
+      --mint: #4be0a8;
+      --amber: #f4b860;
+      --line: rgba(255, 255, 255, 0.08);
+      --line-strong: rgba(255, 255, 255, 0.16);
+      --display: 'Plus Jakarta Sans', 'Rubik', system-ui, sans-serif;
+      --sans: 'Inter', 'Rubik', 'Segoe UI', system-ui, sans-serif;
+      --radius: 20px;
+    }
+    :lang(he) { --display: 'Rubik', system-ui, sans-serif; --sans: 'Rubik', system-ui, sans-serif; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+    @media (max-width: 640px) { .wrap { padding: 0 16px; } }
+
+    /* ---------- nav ---------- */
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(8, 9, 12, 0.72);
+      backdrop-filter: saturate(160%) blur(18px);
+      -webkit-backdrop-filter: saturate(160%) blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+    nav .wrap { display: flex; align-items: center; gap: 28px; height: 64px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 19px; letter-spacing: -0.02em; direction: ltr; }
+    .brand img { width: 30px; height: 30px; border-radius: 8px; }
+    .brand .fx { color: var(--violet-bright); }
+    nav .links { display: flex; gap: 22px; font-size: 14px; color: var(--ink-2); margin-inline-start: auto; }
+    nav .links a:hover { color: var(--ink); }
+    .lang { display: flex; padding: 3px; border: 1px solid var(--line); border-radius: 999px; }
+    .lang button { border: 0; background: none; color: var(--ink-3); font: 600 12.5px var(--sans); padding: 5px 11px; border-radius: 999px; cursor: pointer; }
+    .lang button[aria-pressed='true'] { background: var(--ink); color: var(--canvas); }
+    @media (max-width: 820px) { nav .links { display: none; } .lang { margin-inline-start: auto; } }
+
+    /* ---------- buttons ---------- */
+    .btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 22px; border-radius: 14px;
+      font: 600 15px var(--sans); cursor: pointer; border: 1px solid transparent;
+      transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn svg { width: 18px; height: 18px; flex: none; }
+    .btn-primary { background: var(--ink); color: var(--canvas); box-shadow: 0 10px 40px -10px rgba(165, 148, 255, 0.55); }
+    .btn-primary:hover { background: #fff; }
+    .btn-ghost { border-color: var(--line-strong); color: var(--ink); background: rgba(255, 255, 255, 0.03); }
+    .btn-ghost:hover { border-color: rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.06); }
+    .btn-sm { padding: 8px 14px; font-size: 13.5px; border-radius: 10px; }
+
+    /* ---------- hero ---------- */
+    .hero { position: relative; padding: 88px 0 40px; text-align: center; overflow: hidden; }
+    .hero::before {
+      content: ''; position: absolute; inset: -30% -10% auto; height: 900px; pointer-events: none;
+      background:
+        radial-gradient(40% 50% at 30% 30%, rgba(125, 107, 240, 0.32), transparent 70%),
+        radial-gradient(35% 45% at 72% 22%, rgba(75, 224, 168, 0.14), transparent 70%);
+      filter: blur(20px);
+    }
+    .hero > * { position: relative; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line-strong);
+      background: rgba(255, 255, 255, 0.04); font-size: 13px; color: var(--ink-2);
+    }
+    .pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 12px var(--mint); }
+    h1 {
+      font-family: var(--display); font-weight: 800; letter-spacing: -0.035em;
+      font-size: clamp(40px, 6.4vw, 78px); line-height: 1.02; margin: 24px auto 20px; max-width: 980px;
+    }
+    :lang(he) h1 { letter-spacing: -0.01em; line-height: 1.1; }
+    h1 .grad { background: linear-gradient(100deg, #fff 10%, var(--violet-bright) 55%, var(--mint) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .lede { font-size: clamp(17px, 2vw, 20px); color: var(--ink-2); max-width: 720px; margin: 0 auto 34px; }
+    .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .build { margin-top: 14px; font-size: 13px; color: var(--ink-3); direction: ltr; unicode-bidi: isolate; }
+
+    .shot-frame {
+      margin: 56px auto 0; max-width: 1120px; border-radius: 18px; padding: 8px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.02));
+      box-shadow: 0 60px 140px -40px rgba(125, 107, 240, 0.45), 0 30px 60px -30px rgba(0, 0, 0, 0.9);
+    }
+    .shot-frame img { border-radius: 12px; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+
+    /* ---------- sources strip ---------- */
+    .sources { padding: 56px 0 24px; text-align: center; }
+    .eyebrow { font-size: 12.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+    :lang(he) .eyebrow { letter-spacing: 0.02em; }
+    .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 18px; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 9px; padding: 9px 16px; border-radius: 999px;
+      border: 1px solid var(--line); background: var(--surf-1); font-size: 14px; font-weight: 500;
+    }
+    .chip i { width: 9px; height: 9px; border-radius: 50%; display: block; }
+    .chip small { color: var(--ink-3); font-weight: 400; }
+
+    /* ---------- sections ---------- */
+    section { padding: 88px 0; }
+    .head { max-width: 720px; margin-bottom: 44px; }
+    .head.center { margin-inline: auto; text-align: center; }
+    h2 { font-family: var(--display); font-weight: 800; font-size: clamp(30px, 4vw, 46px); line-height: 1.08; letter-spacing: -0.03em; margin: 12px 0 14px; }
+    :lang(he) h2 { letter-spacing: -0.01em; line-height: 1.15; }
+    .head p { color: var(--ink-2); font-size: 17.5px; margin: 0; }
+
+    /* ---------- features ---------- */
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 960px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 620px) { .grid { grid-template-columns: 1fr; } }
+    .card {
+      position: relative; padding: 28px; border-radius: var(--radius);
+      background: linear-gradient(180deg, var(--surf-2), var(--surf-1)); border: 1px solid var(--line);
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .card:hover { border-color: var(--line-strong); transform: translateY(-2px); }
+    .icon {
+      width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; margin-bottom: 18px;
+      background: rgba(125, 107, 240, 0.14); color: var(--violet-bright); border: 1px solid rgba(165, 148, 255, 0.25);
+    }
+    .icon svg { width: 22px; height: 22px; }
+    .card h3 { font-family: var(--display); font-size: 19px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 8px; }
+    .card p { color: var(--ink-2); margin: 0; font-size: 15px; }
+
+    /* ---------- music split ---------- */
+    .split { display: grid; grid-template-columns: 1fr 1.25fr; gap: 56px; align-items: center; }
+    @media (max-width: 960px) { .split { grid-template-columns: 1fr; gap: 36px; } }
+    .ticks { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 16px; }
+    .ticks li { display: grid; grid-template-columns: 26px 1fr; gap: 12px; color: var(--ink-2); }
+    .ticks li b { color: var(--ink); font-weight: 600; display: block; }
+    .ticks svg { width: 22px; height: 22px; color: var(--mint); margin-top: 2px; }
+    .stack { position: relative; }
+    .stack img { border-radius: 14px; border: 1px solid var(--line-strong); box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.9); }
+    .stack .front { position: absolute; width: 58%; inset-inline-end: -4%; bottom: -12%; box-shadow: 0 30px 80px -20px rgba(125, 107, 240, 0.5); }
+    @media (max-width: 960px) { .stack .front { position: static; width: 100%; margin-top: 14px; } }
+
+    .tiles { display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; margin-top: 64px; }
+    @media (max-width: 960px) { .tiles { grid-template-columns: repeat(4, 1fr); } }
+    .tile { position: relative; border-radius: 14px; overflow: hidden; aspect-ratio: 4 / 3; }
+    .tile img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+    .tile:hover img { transform: scale(1.06); }
+    .tile span { position: absolute; inset-inline-start: 12px; bottom: 9px; font: 700 14.5px var(--display); text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8); }
+
+    /* ---------- gallery ---------- */
+    .tabs { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-bottom: 26px; }
+    .tabs button {
+      border: 1px solid var(--line); background: var(--surf-1); color: var(--ink-2);
+      font: 500 14px var(--sans); padding: 9px 18px; border-radius: 999px; cursor: pointer;
+    }
+    .tabs button[aria-selected='true'] { background: var(--ink); color: var(--canvas); border-color: var(--ink); }
+    .gallery img { transition: opacity 0.25s ease; }
+
+    /* ---------- honesty ---------- */
+    .notes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media (max-width: 760px) { .notes { grid-template-columns: 1fr; } }
+    .note { padding: 24px 26px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surf-1); }
+    .note h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 6px; font: 700 17px var(--display); }
+    .note h3 i { width: 9px; height: 9px; border-radius: 50%; }
+    .note p { margin: 0; color: var(--ink-2); font-size: 15px; }
+
+    /* ---------- open source ---------- */
+    .oss {
+      position: relative; overflow: hidden; border-radius: 28px; padding: 64px 56px;
+      background: radial-gradient(60% 90% at 0% 0%, rgba(125, 107, 240, 0.28), transparent 60%), var(--surf-1);
+      border: 1px solid var(--line-strong);
+      display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: center;
+    }
+    @media (max-width: 900px) { .oss { grid-template-columns: 1fr; padding: 40px 24px; } }
+    .oss > * { min-width: 0; }
+    .oss h2 { margin-top: 0; }
+    .oss p { color: var(--ink-2); font-size: 17px; }
+    pre {
+      margin: 0; padding: 22px 24px; border-radius: 16px; background: #050608; border: 1px solid var(--line);
+      font: 13.5px/1.75 'Cascadia Code', Consolas, ui-monospace, monospace; color: var(--ink-2); overflow-x: auto; direction: ltr; text-align: left;
+    }
+    pre .c { color: #5d6472; }
+    pre .k { color: var(--violet-bright); }
+
+    /* ---------- faq ---------- */
+    .faq { max-width: 820px; margin: 0 auto; }
+    details { border-bottom: 1px solid var(--line); padding: 20px 4px; }
+    summary { cursor: pointer; font: 600 17px var(--display); list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: '+'; color: var(--ink-3); font-weight: 400; font-size: 22px; line-height: 1; }
+    details[open] summary::after { content: '–'; }
+    details p { color: var(--ink-2); margin: 12px 0 0; }
+
+    /* ---------- final cta + footer ---------- */
+    .final { text-align: center; padding: 110px 0 100px; }
+    footer { border-top: 1px solid var(--line); padding: 36px 0 48px; color: var(--ink-3); font-size: 13.5px; }
+    footer .wrap { display: flex; flex-wrap: wrap; gap: 16px 32px; justify-content: space-between; align-items: center; }
+    footer .row { display: flex; gap: 20px; flex-wrap: wrap; }
+    footer a:hover { color: var(--ink); }
+    footer .tmdb { max-width: 520px; }
+
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.on { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="wrap">
+      <a class="brand" href="#top"><img src="assets/icon.png" alt="" /><span>Omni<span class="fx">Flux</span></span></a>
+      <div class="links">
+        <a href="#features" data-t="navFeatures">Features</a>
+        <a href="#music" data-t="navMusic">Music</a>
+        <a href="#screens" data-t="navScreens">Screenshots</a>
+        <a href="#source" data-t="navSource">Open source</a>
+        <a href="#faq" data-t="navFaq">FAQ</a>
+      </div>
+      <div class="lang" role="group" aria-label="Language">
+        <button data-lang="en" aria-pressed="true">EN</button>
+        <button data-lang="he" aria-pressed="false">עב</button>
+      </div>
+      <a class="btn btn-primary btn-sm dl" href="https://github.com/5645hm-a11y/omniflux-player-releases/releases/latest" data-t="navDownload">Download</a>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <div class="wrap">
+      <span class="pill"><span class="dot"></span><span data-t="pill">Free · Open source · Windows 10 &amp; 11</span></span>
+      <h1 data-t="h1" data-html>Every movie, song and Drive folder.<br /><span class="grad">One player.</span></h1>
+      <p class="lede" data-t="lede">OmniFlux plays every format with mpv, turns your folders and Google Drive into a poster library, and searches your computer, YouTube, Deezer and Spotify from one search box.</p>
+      <div class="cta">
+        <a class="btn btn-primary dl" href="https://github.com/5645hm-a11y/omniflux-player-releases/releases/latest">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5 10.5 4.4v7.1H3zm0 13 7.5 1.1v-7H3zm8.5 1.3L21 21v-8.5h-9.5zm0-15.6v7.3H21V3z"/></svg>
+          <span data-t="ctaDownload">Download for Windows</span>
+        </a>
+        <a class="btn btn-ghost" href="https://github.com/5645hm-a11y/omniflux-player">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.56-.29-5.25-1.28-5.25-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.4-5.27 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg>
+          <span data-t="ctaSource">View on GitHub</span>
+        </a>
+      </div>
+      <div class="build" id="build">Windows 10/11 · 64-bit</div>
+      <div class="shot-frame"><img id="heroShot" src="assets/shots/en-home.webp" alt="OmniFlux home screen with trending movies" width="1440" height="900" /></div>
+    </div>
+  </header>
+
+  <div class="sources wrap">
+    <div class="eyebrow" data-t="plays">Plays from</div>
+    <div class="chips">
+      <span class="chip"><i style="background:#a594ff"></i><span data-t="srcLocal">Your computer</span></span>
+      <span class="chip"><i style="background:#4285f4"></i>Google Drive</span>
+      <span class="chip"><i style="background:#ff0033"></i>YouTube</span>
+      <span class="chip"><i style="background:#a238ff"></i>Deezer <small data-t="srcPreview">previews</small></span>
+      <span class="chip"><i style="background:#1ed760"></i>Spotify <small data-t="srcInvite">invite only</small></span>
+    </div>
+  </div>
+
+  <section id="features">
+    <div class="wrap">
+      <div class="head reveal">
+        <div class="eyebrow" data-t="featEyebrow">Why OmniFlux</div>
+        <h2 data-t="featTitle">A media player that finally knows what's in your library.</h2>
+        <p data-t="featLede">No codec packs, no media server, no account on our side. Point it at a folder and it does the rest.</p>
+      </div>
+      <div class="grid">
+        <article class="card reveal">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3z"/></svg></div>
+          <h3 data-t="f1t">Plays everything</h3>
+          <p data-t="f1p">Built on mpv — MKV, 4K HDR, HEVC, AV1, FLAC, subtitles of every kind. No codec packs, no "unsupported format".</p>
+        </article>
+        <article class="card reveal">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="9" rx="1.5"/><rect x="3" y="15" width="7" height="6" rx="1.5"/><rect x="14" y="15" width="7" height="6" rx="1.5"/></svg></div>
+          <h3 data-t="f2t">A real library</h3>
+          <p data-t="f2p">File names become titles with posters, years, ratings, seasons and episodes — in your language.</p>
+        </article>
+        <article class="card reveal">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a5 5 0 1 1 .9-9.9A6 6 0 0 1 19 10a4 4 0 0 1-1 8z"/><path d="m12 12 0 6m-2.5-2.5L12 18l2.5-2.5"/></svg></div>
+          <h3 data-t="f3t">Google Drive as a media server</h3>
+          <p data-t="f3p">Stream movies straight from your Drive with instant seeking. Watched parts are cached, so going back is free.</p>
+        </article>
+        <article class="card reveal">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg></div>
+          <h3 data-t="f4t">One search for everything</h3>
+          <p data-t="f4p">Your files, Drive, YouTube, Deezer and Spotify — one box, one result per song, and you pick where it plays from.</p>
+        </article>
+        <article class="card reveal">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 7v5c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V7z"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <h3 data-t="f5t">Private by design</h3>
+          <p data-t="f5p">No server, no profile, no tracking. Recommendations are computed on your PC and never leave it.</p>
+        </article>
+        <article class="card reveal">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg></div>
+          <h3 data-t="f6t">8 languages, true RTL</h3>
+          <p data-t="f6p">English, Hebrew, Arabic, French, Spanish, German, Italian and Portuguese — with a layout that really flips.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="music">
+    <div class="wrap">
+      <div class="split">
+        <div class="reveal">
+          <div class="eyebrow" data-t="musEyebrow">Music</div>
+          <h2 data-t="musTitle">All your music. One queue.</h2>
+          <p class="lede" style="margin:0;text-align:start" data-t="musLede">A home screen that learns what you like — and a queue that plays a local FLAC, then a YouTube video, then a Drive file, without switching apps.</p>
+          <ul class="ticks">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span><b data-t="m1t">Pick the source</b><span data-t="m1p">The same song found on your PC, Drive and YouTube shows up once — choose where to play it from.</span></span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span><b data-t="m2t">Your playlists, any source</b><span data-t="m2p">Save the queue as a playlist and mix local files, Drive and YouTube in it.</span></span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span><b data-t="m3t">Made for you — offline</b><span data-t="m3p">Jump back in, For you and your top artists come from your own listening, computed locally.</span></span></li>
+          </ul>
+        </div>
+        <div class="stack reveal">
+          <img id="musicBack" src="assets/shots/en-music.webp" alt="OmniFlux music home" loading="lazy" width="1440" height="900" />
+          <img id="musicFront" class="front" src="assets/shots/en-music-search.webp" alt="Unified music search" loading="lazy" width="1440" height="900" />
+        </div>
+      </div>
+      <div class="tiles reveal">
+        <div class="tile"><img src="assets/tiles/focus.webp" alt="" loading="lazy" /><span data-t="tFocus">Focus</span></div>
+        <div class="tile"><img src="assets/tiles/chill.webp" alt="" loading="lazy" /><span data-t="tChill">Chill</span></div>
+        <div class="tile"><img src="assets/tiles/energy.webp" alt="" loading="lazy" /><span data-t="tEnergy">Energy</span></div>
+        <div class="tile"><img src="assets/tiles/cinema.webp" alt="" loading="lazy" /><span data-t="tCinema">Soundtracks</span></div>
+        <div class="tile"><img src="assets/tiles/rock.webp" alt="" loading="lazy" /><span data-t="tRock">Rock</span></div>
+        <div class="tile"><img src="assets/tiles/electronic.webp" alt="" loading="lazy" /><span data-t="tElectronic">Electronic</span></div>
+        <div class="tile"><img src="assets/tiles/jazz.webp" alt="" loading="lazy" /><span data-t="tJazz">Jazz</span></div>
+        <div class="tile"><img src="assets/tiles/mizrahi.webp" alt="" loading="lazy" /><span data-t="tMizrahi">Mizrahi</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screens">
+    <div class="wrap">
+      <div class="head center reveal">
+        <div class="eyebrow" data-t="scrEyebrow">Take a look</div>
+        <h2 data-t="scrTitle">Designed like the apps you love.</h2>
+      </div>
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-shot="home" data-t="sHome">Home</button>
+        <button role="tab" aria-selected="false" data-shot="library" data-t="sLibrary">Library</button>
+        <button role="tab" aria-selected="false" data-shot="music" data-t="sMusic">Music</button>
+        <button role="tab" aria-selected="false" data-shot="music-moods" data-t="sMoods">Moods &amp; genres</button>
+        <button role="tab" aria-selected="false" data-shot="music-search" data-t="sSearch">Search</button>
+        <button role="tab" aria-selected="false" data-shot="settings" data-t="sSettings">Settings</button>
+      </div>
+      <div class="shot-frame gallery reveal" style="margin-top:0"><img id="galleryShot" src="assets/shots/en-home.webp" alt="" loading="lazy" width="1440" height="900" /></div>
+    </div>
+  </section>
+
+  <section id="honest">
+    <div class="wrap">
+      <div class="head reveal">
+        <div class="eyebrow" data-t="honEyebrow">Straight answers</div>
+        <h2 data-t="honTitle">What works today, and what doesn't.</h2>
+        <p data-t="honLede">Some services limit independent apps. We'd rather tell you up front.</p>
+      </div>
+      <div class="notes">
+        <div class="note reveal"><h3><i style="background:var(--mint)"></i><span data-t="n1t">Your files, Drive and YouTube</span></h3><p data-t="n1p">Fully available to everyone. YouTube plays in the official embedded player, including its ads.</p></div>
+        <div class="note reveal"><h3><i style="background:var(--mint)"></i><span data-t="n2t">Deezer</span></h3><p data-t="n2p">Search the full catalog and play 30-second previews, clearly marked, without an account.</p></div>
+        <div class="note reveal"><h3><i style="background:var(--amber)"></i><span data-t="n3t">Spotify — invite only</span></h3><p data-t="n3p">Spotify now limits independent apps to a handful of approved accounts. Everyone else can use every other source.</p></div>
+        <div class="note reveal"><h3><i style="background:var(--amber)"></i><span data-t="n4t">Google Drive sign-in</span></h3><p data-t="n4p">Until Google finishes verifying OmniFlux, sign-in shows an "unverified app" screen. Click Advanced → Continue. OmniFlux only asks for read-only access.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="source">
+    <div class="wrap">
+      <div class="oss reveal">
+        <div>
+          <div class="eyebrow" data-t="ossEyebrow">Open source · GPL-3.0</div>
+          <h2 data-t="ossTitle">Built in the open.</h2>
+          <p data-t="ossP">Every line of OmniFlux is on GitHub. Read it, build it, improve it. Electron, React and TypeScript on top of mpv, with 340+ automated tests.</p>
+          <div class="cta" style="justify-content:flex-start;margin-top:26px">
+            <a class="btn btn-primary" href="https://github.com/5645hm-a11y/omniflux-player"><span data-t="ossStar">Star on GitHub</span></a>
+            <a class="btn btn-ghost" href="https://github.com/5645hm-a11y/omniflux-player/issues"><span data-t="ossIssue">Report an issue</span></a>
+          </div>
+        </div>
+<pre><span class="c"># build from source</span>
+<span class="k">git</span> clone https://github.com/5645hm-a11y/omniflux-player
+<span class="k">cd</span> omniflux-player
+<span class="k">npm</span> install        <span class="c"># also fetches mpv</span>
+<span class="k">cp</span> .env.example .env   <span class="c"># your own API keys</span>
+<span class="k">npm</span> run dev</pre>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <div class="head center reveal"><h2 data-t="faqTitle">Questions</h2></div>
+      <div class="faq">
+        <details><summary data-t="q1">Is it really free?</summary><p data-t="a1">Yes. No subscription, no ads of our own, no account. The code is GPL-3.0.</p></details>
+        <details><summary data-t="q2">Windows says the installer is from an unknown publisher.</summary><p data-t="a2">OmniFlux isn't code-signed with a paid certificate yet. Click "More info" → "Run anyway". The source for every release is on GitHub.</p></details>
+        <details><summary data-t="q3">Does it update itself?</summary><p data-t="a3">Yes. New versions download in the background and install the next time you close the app. Your library and settings are kept.</p></details>
+        <details><summary data-t="q4">Where is my data stored?</summary><p data-t="a4">Only on your computer. Sign-ins to Google, Spotify or Deezer go directly to them; OmniFlux has no server.</p></details>
+        <details><summary data-t="q5">Mac or Linux?</summary><p data-t="a5">Windows only for now. A mobile app is on the roadmap.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <div class="final wrap reveal">
+    <h2 data-t="finalTitle">Your whole media world, one click away.</h2>
+    <div class="cta" style="margin-top:28px">
+      <a class="btn btn-primary dl" href="https://github.com/5645hm-a11y/omniflux-player-releases/releases/latest"><span data-t="ctaDownload">Download for Windows</span></a>
+    </div>
+    <div class="build build2">Windows 10/11 · 64-bit</div>
+  </div>
+
+  <footer>
+    <div class="wrap">
+      <a class="brand" href="#top"><img src="assets/icon.png" alt="" /><span>Omni<span class="fx">Flux</span></span></a>
+      <div class="row">
+        <a href="https://github.com/5645hm-a11y/omniflux-player">GitHub</a>
+        <a href="https://github.com/5645hm-a11y/omniflux-player-releases/releases" data-t="fReleases">Releases</a>
+        <a href="https://github.com/5645hm-a11y/omniflux-player/blob/main/LICENSE">GPL-3.0</a>
+        <a href="https://github.com/5645hm-a11y/omniflux-player/blob/main/PRIVACY.md" data-t="fPrivacy">Privacy</a>
+      </div>
+      <p class="tmdb" data-t="tmdb">This product uses the TMDB API but is not endorsed or certified by TMDB. Spotify, YouTube, Deezer and Google Drive are trademarks of their owners; OmniFlux is not affiliated with them.</p>
+    </div>
+  </footer>
+
+  <script>
+    const T = {
+      he: {
+        navFeatures: 'יכולות', navMusic: 'מוזיקה', navScreens: 'צילומי מסך', navSource: 'קוד פתוח', navFaq: 'שאלות', navDownload: 'הורדה',
+        pill: 'חינם · קוד פתוח · Windows 10 ו-11',
+        h1: 'כל סרט, כל שיר וכל תיקייה בדרייב.<br /><span class="grad">נגן אחד.</span>',
+        lede: 'OmniFlux מנגן כל פורמט עם mpv, הופך את התיקיות ואת הדרייב שלכם לספרייה עם כרזות, ומחפש במחשב, ב-YouTube, ב-Deezer וב-Spotify משורת חיפוש אחת.',
+        ctaDownload: 'הורדה ל-Windows', ctaSource: 'לקוד ב-GitHub',
+        plays: 'מנגן מ־', srcLocal: 'המחשב שלכם', srcPreview: 'קטעים', srcInvite: 'בהזמנה',
+        featEyebrow: 'למה OmniFlux', featTitle: 'נגן מדיה שסוף סוף יודע מה יש בספרייה שלכם.',
+        featLede: 'בלי חבילות קודקים, בלי שרת מדיה, בלי חשבון אצלנו. מצביעים על תיקייה, והוא עושה את השאר.',
+        f1t: 'מנגן הכול', f1p: 'בנוי על mpv — MKV, ‏4K HDR, ‏HEVC, ‏AV1, ‏FLAC וכל סוג כתוביות. בלי חבילות קודקים ובלי "פורמט לא נתמך".',
+        f2t: 'ספרייה אמיתית', f2p: 'שמות קבצים הופכים לכותרים עם כרזות, שנים, דירוגים, עונות ופרקים — בשפה שלכם.',
+        f3t: 'הדרייב כשרת מדיה', f3p: 'סרטים ישירות מהדרייב, עם דילוג מיידי. מה שכבר נצפה נשמר, כך שחזרה אחורה לא עולה כלום.',
+        f4t: 'חיפוש אחד לכול', f4p: 'הקבצים, הדרייב, YouTube, ‏Deezer ו-Spotify — שורה אחת, תוצאה אחת לכל שיר, ואתם בוחרים מאיפה לנגן.',
+        f5t: 'פרטיות מהיסוד', f5p: 'אין שרת, אין פרופיל, אין מעקב. ההמלצות מחושבות במחשב שלכם ולא יוצאות ממנו.',
+        f6t: '8 שפות, ימין-לשמאל אמיתי', f6p: 'עברית, ערבית, אנגלית, צרפתית, ספרדית, גרמנית, איטלקית ופורטוגזית — עם פריסה שבאמת מתהפכת.',
+        musEyebrow: 'מוזיקה', musTitle: 'כל המוזיקה שלכם. תור אחד.',
+        musLede: 'מסך בית שלומד מה אתם אוהבים — ותור שמנגן FLAC מהמחשב, אחריו סרטון מ-YouTube ואחריו קובץ מהדרייב, בלי להחליף אפליקציה.',
+        m1t: 'בוחרים את המקור', m1p: 'אותו שיר מהמחשב, מהדרייב ומ-YouTube מופיע פעם אחת — ובוחרים מאיפה לנגן.',
+        m2t: 'פלייליסטים מכל מקור', m2p: 'שומרים את התור כפלייליסט, ומערבבים בו קבצים, דרייב ו-YouTube.',
+        m3t: 'בשבילך — בלי ענן', m3p: '"להמשיך להאזין", "בשבילך" והאמנים המובילים שלכם מחושבים מההאזנה שלכם, במחשב.',
+        tFocus: 'ריכוז', tChill: 'רגוע', tEnergy: 'אנרגיה', tCinema: 'פסקולים', tElectronic: 'אלקטרוני', tJazz: "ג'אז", tRock: 'רוק', tMizrahi: 'מזרחית',
+        scrEyebrow: 'הצצה', scrTitle: 'מעוצב כמו האפליקציות שאתם אוהבים.',
+        sHome: 'בית', sLibrary: 'ספרייה', sMusic: 'מוזיקה', sMoods: 'מצבי רוח וז׳אנרים', sSearch: 'חיפוש', sSettings: 'הגדרות',
+        honEyebrow: 'בלי אותיות קטנות', honTitle: 'מה עובד היום, ומה לא.', honLede: 'חלק מהשירותים מגבילים אפליקציות עצמאיות. אנחנו מעדיפים לומר את זה מראש.',
+        n1t: 'הקבצים שלכם, הדרייב ו-YouTube', n1p: 'זמינים לכולם במלואם. YouTube מתנגן בנגן הרשמי המוטמע, כולל הפרסומות שלו.',
+        n2t: 'Deezer', n2p: 'חיפוש בכל הקטלוג וקטעים של 30 שניות, מסומנים בבירור, בלי חשבון.',
+        n3t: 'Spotify — בהזמנה בלבד', n3p: 'Spotify מגביל היום אפליקציות עצמאיות לרשימה קטנה של חשבונות מאושרים. כל שאר המקורות פתוחים לכולם.',
+        n4t: 'התחברות לדרייב', n4p: 'עד ש-Google תסיים לאמת את OmniFlux, בהתחברות מופיע מסך "אפליקציה לא מאומתת". לוחצים "מתקדם" ← "המשך". ‏OmniFlux מבקש גישת קריאה בלבד.',
+        ossEyebrow: 'קוד פתוח · GPL-3.0', ossTitle: 'נבנה בגלוי.',
+        ossP: 'כל שורה של OmniFlux נמצאת ב-GitHub. קוראים, בונים, משפרים. ‏Electron, ‏React ו-TypeScript מעל mpv, עם יותר מ-340 בדיקות אוטומטיות.',
+        ossStar: 'כוכב ב-GitHub', ossIssue: 'דיווח על תקלה',
+        faqTitle: 'שאלות',
+        q1: 'זה באמת חינם?', a1: 'כן. בלי מנוי, בלי פרסומות משלנו ובלי חשבון. הקוד ברישיון GPL-3.0.',
+        q2: 'Windows אומר שקובץ ההתקנה ממפרסם לא ידוע.', a2: 'OmniFlux עדיין אינו חתום בתעודה בתשלום. לוחצים "מידע נוסף" ← "הפעל בכל זאת". הקוד של כל גרסה נמצא ב-GitHub.',
+        q3: 'הוא מתעדכן לבד?', a3: 'כן. גרסה חדשה יורדת ברקע ומותקנת בסגירה הבאה. הספרייה וההגדרות נשמרות.',
+        q4: 'איפה נשמר המידע שלי?', a4: 'רק במחשב שלכם. ההתחברות ל-Google, ל-Spotify או ל-Deezer עוברת ישירות אליהם; ל-OmniFlux אין שרת.',
+        q5: 'Mac או Linux?', a5: 'בינתיים Windows בלבד. אפליקציה לנייד נמצאת בתוכנית.',
+        finalTitle: 'כל עולם המדיה שלכם, בלחיצה אחת.',
+        fReleases: 'גרסאות', fPrivacy: 'פרטיות',
+        tmdb: 'המוצר משתמש ב-API של TMDB, אך אינו מאושר או מוסמך על ידי TMDB. ‏Spotify, ‏YouTube, ‏Deezer ו-Google Drive הם סימנים מסחריים של בעליהם; OmniFlux אינו קשור אליהם.'
+      }
+    }
+    const EN = {}
+    document.querySelectorAll('[data-t]').forEach((el) => { EN[el.dataset.t] = el.hasAttribute('data-html') ? el.innerHTML : el.textContent })
+    T.en = EN
+
+    let lang = 'en'
+    let shot = 'home'
+    const shotSrc = (name) => `assets/shots/${lang}-${name}.webp`
+    function setLang(next) {
+      lang = next
+      const dict = T[next]
+      document.documentElement.lang = next
+      document.documentElement.dir = next === 'he' ? 'rtl' : 'ltr'
+      document.querySelectorAll('[data-t]').forEach((el) => {
+        const v = dict[el.dataset.t]
+        if (v === undefined) return
+        if (el.hasAttribute('data-html')) el.innerHTML = v
+        else el.textContent = v
+      })
+      document.querySelectorAll('.lang button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === next)))
+      document.getElementById('heroShot').src = shotSrc('home')
+      document.getElementById('musicBack').src = shotSrc('music')
+      document.getElementById('musicFront').src = shotSrc('music-search')
+      document.getElementById('galleryShot').src = shotSrc(shot)
+      try { localStorage.setItem('omniflux.site.lang', next) } catch { /* פרטי */ }
+    }
+    document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('click', () => setLang(b.dataset.lang)))
+
+    document.querySelectorAll('.tabs button').forEach((b) => b.addEventListener('click', () => {
+      shot = b.dataset.shot
+      document.querySelectorAll('.tabs button').forEach((x) => x.setAttribute('aria-selected', String(x === b)))
+      const img = document.getElementById('galleryShot')
+      img.style.opacity = '0.2'
+      const next = new Image()
+      next.onload = () => { img.src = next.src; img.style.opacity = '1' }
+      next.src = shotSrc(shot)
+    }))
+
+    let saved = null
+    try { saved = localStorage.getItem('omniflux.site.lang') } catch { /* פרטי */ }
+    setLang(saved ?? ((navigator.language || '').toLowerCase().startsWith('he') ? 'he' : 'en'))
+
+    // אנימציית כניסה עדינה; בלי IntersectionObserver הכול פשוט גלוי
+    const io = 'IntersectionObserver' in window ? new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target) } })
+    }, { rootMargin: '0px 0px -8% 0px' }) : null
+    document.querySelectorAll('.reveal').forEach((el) => io ? io.observe(el) : el.classList.add('on'))
+
+    /*
+     * קישור ההורדה נמשך מהשחרור האחרון, כדי שהדף לא יזדקן בכל גרסה.
+     * אם הבקשה נכשלה נשאר קישור לדף השחרורים — לא כפתור מת.
+     */
+    const REPO = '5645hm-a11y/omniflux-player-releases'
+    fetch(`https://api.github.com/repos/${REPO}/releases?per_page=10`)
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+      .then((list) => {
+        const rel = (list || []).find((x) => !x.draft && !x.prerelease)
+        const setup = rel && (rel.assets || []).find((a) => /setup\.exe$/i.test(a.name))
+        if (!setup) return
+        document.querySelectorAll('a.dl').forEach((a) => { a.href = setup.browser_download_url })
+        const text = `v${String(rel.tag_name).replace(/^v/, '')} · ${Math.round(setup.size / 1048576)} MB · Windows 10/11 · 64-bit`
+        document.querySelectorAll('.build').forEach((el) => { el.textContent = text })
+      })
+      .catch(() => undefined)
+  </script>
+</body>
+</html>

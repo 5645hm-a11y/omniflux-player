@@ -1,0 +1,65 @@
+appId: com.avisharabi.omniflux
+productName: OmniFlux Player
+directories:
+  output: release
+  buildResources: build
+
+# CastLabs publishes the Widevine-enabled Electron archives in its own release
+# repository. electron-builder otherwise asks the official Electron mirror for
+# the +wvcus version and receives a 404.
+electronDownload:
+  mirror: https://github.com/castlabs/electron-releases/releases/download/
+
+# חתימת VMP לייצור, ואימות שלה. בלעדיה Spotify דוחה את הרישיון (403/500)
+# ואין צליל בשום שיר — ר' tools/vmp-sign.cjs.
+afterSign: tools/vmp-sign.cjs
+
+files:
+  - out/**/*
+  - package.json
+
+# המנוע נשלח כקובץ חיצוני ולא בתוך ה-asar, כדי שאפשר יהיה להריץ אותו
+# כתהליך. הרישיון שלו נוסע איתו — mpv הוא GPL וזו חובה.
+extraResources:
+  - from: build/icon.png
+    to: app-icon.png
+  - from: resources/engine
+    to: engine
+    filter:
+      - '**/*'
+
+# ‏"פתח באמצעות" ולחיצה כפולה.
+# ברמה העליונה ולא תחת win: — שם electron-builder מתעלם מזה בשקט,
+# והמתקין נבנה בלי שום שיוך. אומת מול התצורה שנפתרה.
+fileAssociations:
+  - ext: [mp4, mkv, avi, mov, webm, m4v, ts, m2ts, flv, wmv, mpg, mpeg]
+    name: OmniFlux Video
+    description: קובץ וידאו
+    role: Viewer
+  - ext: [mp3, flac, m4a, opus, ogg, wav, aac, wma]
+    name: OmniFlux Audio
+    description: קובץ אודיו
+    role: Viewer
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  artifactName: OmniFlux-${version}-setup.${ext}
+
+# העדכונים נמשכים מהשחרורים בגיטהאב. latest.yml נוצר מכאן.
+publish:
+  provider: github
+  owner: 5645hm-a11y
+  repo: omniflux-player-releases
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  perMachine: false
+  deleteAppDataOnUninstall: false
+  # המתקין רושם את שיוכי הקבצים, ומסיר אותם בהסרה
+  runAfterFinish: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: OmniFlux Player

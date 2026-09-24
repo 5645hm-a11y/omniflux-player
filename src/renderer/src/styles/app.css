@@ -1,0 +1,450 @@
+@import 'tailwindcss';
+
+/**
+ * Obsidian — שפת העיצוב של OmniFlux.
+ *
+ * המסך כאן אינו דף אלא זכוכית מעל סרט: חלון התוכנה שקוף לגמרי,
+ * ומתחתיו יושב חלון המנוע, ולכן `backdrop-filter` מטשטש פריים אמיתי
+ * ולא רקע מצויר.
+ *
+ * שלושה כללים שמהם נגזר כל השאר:
+ *
+ *   · האמנות מנצחת. הממשק כמעט חסר גוון — קרקע אובסידיאן ודיו
+ *     ניטרלי — כי כל צבע קבוע מתחרה בכרזה שהוא מקיף.
+ *   · לבן לפעולה, סגול למצב. לבן ארקטי הוא המילוי היחיד שאינו
+ *     מתנגש עם שום כרזה, ולכן הוא שמור לפעולה הראשית. הסגול מופיע
+ *     אך ורק במיקוד, בבחירה ובהתקדמות.
+ *   · הצבע היחיד שאינו קבוע מראש הוא תאורת האווירה, והיא נדגמת
+ *     מהאמנות שעל המסך בלבד. אין גוון נפילה.
+ */
+
+/*
+ * שני גופנים, שני תפקידים.
+ *
+ * Plus Jakarta Sans לכותרות ולבאנר: אישיות גאומטרית ומשקלים כבדים
+ * שנושאים כותר בגודל 56 פיקסלים. Inter לטקסט הרץ ולמספרים.
+ *
+ * שניהם לטיניים בלבד. טווח היוניקוד מפורש כדי שעברית וערבית ייפלו
+ * לגופן המערכת ולא יוצגו כריבועים.
+ */
+@font-face {
+  font-family: 'Jakarta';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('../assets/fonts/PlusJakartaSans-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Jakarta';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('../assets/fonts/PlusJakartaSans-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0,
+    U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../assets/fonts/InterVariable.woff2') format('woff2');
+  unicode-range: U+0000-052F, U+1E00-1EFF, U+2000-20CF, U+2190-2BFF, U+FB00-FB4F;
+}
+
+@theme {
+  /*
+   * הקרקע וסולם המשטחים.
+   *
+   * לא שחור טהור: שחור מוחלט מייצר ניגוד קשה ועייפות בצפייה ארוכה.
+   * הסולם עולה בכ-4% בהירות בכל שלב — מנוחה, ריחוף, פעיל — עם נטייה
+   * קרירה קלה, שמזכה את הלבן הארקטי בחמימות יחסית מולה.
+   */
+  --color-canvas: #08090c;
+  --color-surf-1: #101216;
+  --color-surf-2: #16181e;
+  --color-surf-3: #1d2027;
+
+  /*
+   * דיו.
+   *
+   * טקסט הגוף אינו לבן טהור אלא 95% בהירות — לבן מלא על כמעט-שחור
+   * זוהר ומעייף בקריאה ממושכת.
+   */
+  --color-ink: #f2f3f5;
+  --color-ink-2: #a9aeb8;
+  /*
+   * נמדד ולא נבחר בעין: ‎#6E7480 הגיע ל-4.24:1 בלבד על הקרקע
+   * ול-3.47:1 על המשטח הגבוה, כלומר נכשל בטקסט רץ. הערך הזה עומד
+   * ב-4.5:1 על כל ארבעת המשטחים.
+   */
+  --color-ink-3: #848a98;
+
+  /* פעולה ראשית. המילוי היחיד שאינו מתנגש עם אף כרזה. */
+  --color-arctic: #f5f7fa;
+
+  /* מצב בלבד: מיקוד, בחירה, התקדמות. */
+  --color-violet: #7d6bf0;
+  --color-violet-bright: #9c8bff;
+
+  /* "יש לך את זה" / "כלול במנוי" */
+  --color-mint: #4be0a8;
+  /* שגיאות ופעולות הרסניות בלבד */
+  --color-crimson: #ff4d5e;
+
+  --radius-o-xs: 4px;
+  --radius-o-sm: 6px;
+  --radius-o-md: 9px;
+  --radius-o-lg: 12px;
+  --radius-o-xl: 16px;
+  --radius-o-2xl: 22px;
+
+  /*
+   * גובה.
+   *
+   * שתי שכבות בכל צל: אחת צרה שמגדירה את הקצה, ואחת רחבה ורכה
+   * שמניחה את הרכיב במרחב. שכבה אחת לבדה נראית שטוחה.
+   */
+  --shadow-e1: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 12px -4px rgb(0 0 0 / 0.5);
+  --shadow-e2: 0 8px 24px -8px rgb(0 0 0 / 0.65), 0 2px 6px rgb(0 0 0 / 0.4);
+  --shadow-e3: 0 0 0 1px rgb(255 255 255 / 0.14), 0 28px 56px -16px rgb(0 0 0 / 0.85);
+  --shadow-e4: 0 40px 96px -24px rgb(0 0 0 / 0.9);
+  --shadow-ring: 0 0 0 2px var(--color-violet);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+  /* חריגה קלה מעבר ליעד — מה שגורם לתנועה להרגיש פיזית ולא לינארית */
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.5, 1);
+
+  --duration-instant: 100ms;
+  --duration-fast: 160ms;
+  --duration-normal: 240ms;
+  --duration-slow: 400ms;
+  --duration-cine: 800ms;
+
+  --font-sans: 'Inter', 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif;
+  --font-display: 'Jakarta', 'Inter', 'Segoe UI Variable Display', 'Segoe UI', system-ui, sans-serif;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    margin: 0;
+  }
+
+  /*
+   * הרקע חייב להישאר שקוף לחלוטין — מתחתיו יושב חלון הווידאו.
+   * כל צבע אטום כאן יסתיר את הסרט.
+   */
+  body {
+    background: transparent;
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: 'cv05' 1, 'ss03' 1;
+  }
+
+  button {
+    font: inherit;
+    color: inherit;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+
+  input {
+    font: inherit;
+  }
+
+  /*
+   * כותרות מאוזנות.
+   * בלי זה כותרת שנשברת משאירה מילה בודדת בשורה השנייה — "Votre
+   * musique, en / grand" במסך המוזיקה. האיזון מחלק את השורות
+   * לאורכים דומים, בכל שפה ובכל רוחב.
+   */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-violet);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  /* פס גלילה שמרגיש חלק מהממשק ולא חלק מהמערכת */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(255 255 255 / 0.12);
+    border: 3px solid transparent;
+    background-clip: content-box;
+    border-radius: 99px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(255 255 255 / 0.24);
+    background-clip: content-box;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+/**
+ * זכוכית, בשלושה עוביים.
+ *
+ * מתכון אחד הוא הסיבה שהממשק נראה שטוח. שלושה עוביים נותנים סדר
+ * עומק: מה שצף ליד התוכן, מה שמפריד, ומה שמכסה.
+ *
+ * לכל אחד יש ברק פנימי בקצה העליון. בלעדיו משטח שקוף נראה כמו חור
+ * ולא כמו חומר.
+ *
+ * העוביים כוילו בעין מול ההתנהגות של החומרים של אפל — המספרים
+ * עצמם אינם מתועדים בפומבי בצורה שניתן לאחזר.
+ */
+@utility glass-ultrathin {
+  background: rgb(255 255 255 / 0.05);
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
+}
+
+@utility glass-thin {
+  background: rgb(16 18 22 / 0.52);
+  backdrop-filter: blur(32px) saturate(160%);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.1),
+    var(--shadow-e2);
+}
+
+@utility glass-regular {
+  background: rgb(8 9 12 / 0.78);
+  backdrop-filter: blur(48px) saturate(150%);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.07),
+    var(--shadow-e4);
+}
+
+/** משטח מוצק לכרטיסים בתוך שכבה שכבר מטושטשת */
+@utility surface {
+  background: rgb(255 255 255 / 0.045);
+  border: 1px solid rgb(255 255 255 / 0.08);
+}
+
+/** קו הפרדה בעובי שערה, בשני משקלים */
+@utility hairline {
+  border-color: rgb(255 255 255 / 0.08);
+}
+@utility hairline-strong {
+  border-color: rgb(255 255 255 / 0.16);
+}
+
+/**
+ * גרעיניות.
+ *
+ * מדרג נקי נראה דיגיטלי; שכבת רעש דקה מעליו נראית כמו חומר. הרעש
+ * מיוצר ב-SVG ולא בקובץ תמונה, כדי שלא יוסיף בקשת רשת ולא משקל.
+ */
+@utility grain-layer {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+  opacity: 0.12;
+}
+
+@utility drag {
+  -webkit-app-region: drag;
+}
+
+@utility no-drag {
+  -webkit-app-region: no-drag;
+}
+
+/**
+ * כרטיס תוכן.
+ *
+ * המידות נלקחו מהתנהגות המיקוד ב-tvOS: הגדלה של כ-6% ב-180ms.
+ *
+ * `transform` בלבד, ובכוונה: הכרטיס המוגדל עובר לפני שכניו ואינו
+ * דוחף אותם. כל שינוי שנוגע ברוחב או בשוליים היה מסיט את השורה
+ * כולה בכל ריחוף.
+ */
+@utility card-lift {
+  transition:
+    transform 180ms var(--ease-out),
+    box-shadow 180ms var(--ease-out);
+  box-shadow: var(--shadow-e1);
+}
+
+/**
+ * הכרטיס במיקוד.
+ *
+ * מעבר להגדלה יש כאן זוהר סגול רחב ורך מתחת לכרטיס. הוא אינו
+ * מסגרת ואינו נוגע בקצה — הוא נשפך החוצה, כך שהכרטיס נראה מורם
+ * מעל המשטח ולא מסומן עליו. סגול, כי בשפה הזאת מיקוד הוא מצב.
+ */
+@utility card-lift-on {
+  transform: scale(1.05);
+  box-shadow: 0 0 24px -4px rgb(125 107 240 / 0.35);
+}
+
+/* טיפוגרפיה של כותרות — Jakarta עם ריווח אותיות הדוק */
+@utility font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.025em;
+}
+
+/**
+ * הצללה לטקסט מעל אמנות.
+ *
+ * הערכים מתועדים: שחור ב-70% בבסיס הטקסט, נמוג לשקיפות על פני
+ * 200 פיקסלים. זה מה שמחזיק 4.5:1 מעל כרזה בהירה בלי להסתיר אותה.
+ */
+@utility scrim-bottom {
+  background: linear-gradient(to top, rgb(0 0 0 / 0.7) 0%, transparent 200px);
+}
+
+/**
+ * גלי הקול של סרגל הנגן.
+ *
+ * הפס אינו יורד לאפס אלא ל-15%: פס שנעלם לגמרי נראה כמו תקלת
+ * רינדור, ופס נמוך נראה כמו שקט.
+ */
+@keyframes eqbar {
+  from {
+    height: 15%;
+  }
+  to {
+    height: 100%;
+  }
+}
+
+@utility eq-bar {
+  width: 2.5px;
+  height: 15%;
+  border-radius: 99px;
+  background: var(--color-violet-bright);
+}
+
+@utility eq-bar-on {
+  animation: eqbar var(--eq-duration, 1s) ease-in-out var(--eq-delay, 0s) infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eq-bar-on {
+    animation: none;
+    height: 45%;
+  }
+}
+
+@keyframes music-wave {
+  0%,
+  100% {
+    height: max(12%, calc(var(--wave-height) * 0.42));
+    opacity: 0.5;
+  }
+  50% {
+    height: var(--wave-height);
+    opacity: 1;
+  }
+}
+
+@utility music-wave-bar {
+  height: max(12%, calc(var(--wave-height) * 0.42));
+  border-radius: 99px;
+  background: linear-gradient(to top, var(--color-violet), var(--color-arctic));
+  opacity: 0.45;
+  transform-origin: center;
+}
+
+@utility music-wave-bar-on {
+  animation: music-wave var(--wave-duration) ease-in-out var(--wave-delay) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .music-wave-bar-on {
+    animation: none;
+    height: max(12%, calc(var(--wave-height) * 0.65));
+  }
+}
+
+/* כניסת כרטיסים: עלייה קצרה עם דהייה, בהשהיה מדורגת לפי המיקום */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility rise-in {
+  animation: rise var(--duration-slow) var(--ease-out) both;
+}
+
+/**
+ * שלד טעינה.
+ *
+ * מסך שחור עם מילה "טוען" אינו אומר כלום על מה שעומד להגיע. שלד
+ * בצורת התוכן אומר "כאן יהיה באנר, ומתחתיו שורת כרטיסים" — ולכן
+ * ההמתנה מרגישה קצרה יותר גם כשהיא זהה.
+ *
+ * הברק נע לרוחב במקום להבהב: הבהוב מושך את העין שוב ושוב, ותנועה
+ * אחת חוצה נקראת כהתקדמות.
+ */
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@utility skeleton {
+  background-image: linear-gradient(
+    90deg,
+    rgb(255 255 255 / 0.04) 0%,
+    rgb(255 255 255 / 0.09) 50%,
+    rgb(255 255 255 / 0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background-image: none;
+    background-color: rgb(255 255 255 / 0.06);
+  }
+}

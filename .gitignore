@@ -1,0 +1,20 @@
+node_modules/
+out/
+dist/
+release/
+resources/engine/
+test-results/
+playwright-report/
+.shots/
+
+.env
+.env.local
+*.log
+.DS_Store
+Thumbs.db
+
+# קובצי מדיה לבדיקה שנוצרים בשורש בטעות
+*.mp4
+*.mkv
+*.mpg
+*.wav

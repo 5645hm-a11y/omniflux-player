@@ -1,0 +1,24 @@
+name: Bug report
+description: Something doesn't work as expected
+labels: [bug]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: OmniFlux version
+      placeholder: "2.0.7 (Settings → About)"
+    validations:
+      required: true
+  - type: dropdown
+    id: source
+    attributes:
+      label: Where does it happen?
+      multiple: true
+      options: [Local files, Google Drive, YouTube, Deezer, Spotify, Library / search, Installer / update, Other]
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+      description: Steps to reproduce help a lot. Please don't paste tokens or keys.
+    validations:
+      required: true

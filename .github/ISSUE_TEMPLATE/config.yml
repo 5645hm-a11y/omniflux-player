@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/5645hm-a11y/omniflux-player/security/advisories/new
+    about: Please report security problems privately.

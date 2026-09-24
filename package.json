@@ -1,0 +1,54 @@
+{
+  "name": "omniflux-player",
+  "productName": "OmniFlux Player",
+  "version": "2.0.7",
+  "description": "OmniFlux Player — a free, open-source media player for Windows: mpv engine, one library for movies, music and Google Drive",
+  "main": "./out/main/index.js",
+  "author": "Avi Sharabi",
+  "license": "GPL-3.0-only",
+  "homepage": "https://5645hm-a11y.github.io/omniflux-player/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/5645hm-a11y/omniflux-player.git"
+  },
+  "bugs": {
+    "url": "https://github.com/5645hm-a11y/omniflux-player/issues"
+  },
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "npm run engine && node tools/gen-installer-nsh.mjs && electron-vite build",
+    "engine": "node tools/fetch-engine.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "playwright test",
+    "test:unit": "playwright test src",
+    "verify:contrast": "node tools/_contrast.mjs",
+    "verify:shots": "node tools/_final-shots.mjs",
+    "dist": "npm run build && electron-builder --win",
+    "postinstall": "node tools/fetch-engine.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react": "^5.1.0",
+    "electron": "https://github.com/castlabs/electron-releases/archive/refs/tags/v43.0.0%2Bwvcus.tar.gz",
+    "electron-builder": "^26.15.3",
+    "electron-vite": "^5.0.0",
+    "motion": "^13.1.0",
+    "music-metadata": "^11.16.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.6",
+    "zustand": "^5.0.15"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.9",
+    "lucide-react": "^1.31.0"
+  }
+}
