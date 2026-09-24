@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Privacy Policy — OmniFlux Player</title>
+  <link rel="icon" href="assets/favicon.png" />
+  <style>
+    :root { --canvas: #08090c; --surf: #0f1115; --ink: #f2f3f5; --ink-2: #b3b8c2; --ink-3: #868c99; --violet: #a594ff; --line: rgba(255,255,255,.08); }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--canvas); color: var(--ink-2); font: 16px/1.7 'Segoe UI', system-ui, sans-serif; }
+    main { max-width: 760px; margin: 0 auto; padding: 48px 16px 80px; }
+    nav { max-width: 760px; margin: 0 auto; padding: 22px 16px 0; display: flex; gap: 18px; font-size: 14px; }
+    a { color: var(--violet); }
+    h1 { color: var(--ink); font-size: 36px; line-height: 1.15; margin: 0 0 8px; }
+    h2 { color: var(--ink); font-size: 21px; margin: 36px 0 10px; }
+    strong { color: var(--ink); }
+    code { background: var(--surf); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; font-size: 13.5px; word-break: break-all; }
+    table { width: 100%; border-collapse: collapse; font-size: 14.5px; display: block; overflow-x: auto; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { color: var(--ink); }
+    li { margin: 6px 0; }
+  </style>
+</head>
+<body>
+  <nav><a href="./">← OmniFlux Player</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></nav>
+  <main>
+<h1>Privacy Policy</h1>
+<p><em>Last updated: September 24, 2026</em></p>
+<p>See also the <a href="terms.html">Terms of Use</a>.</p>
+<p>OmniFlux Player is a desktop app. <strong>It has no server and no user accounts of its own, and it collects no analytics or telemetry.</strong> Everything it stores stays on your computer, in <code>%APPDATA%\OmniFlux Player</code>.</p>
+<h2>What stays on your computer</h2>
+<ul>
+<li>Your library catalog: folder paths, file names, and the posters and details fetched for them.</li>
+<li>Settings, playlists, listening history and recommendations. History and recommendations are computed locally and never uploaded.</li>
+<li>Sign-in tokens for services you connect (Google Drive, Spotify, Deezer). They are used only to talk to that service directly.</li>
+<li>A cache of parts of Drive files you have watched. You can clear it in Settings.</li>
+</ul>
+<h2>What is sent to third parties, and why</h2>
+<p>OmniFlux talks directly to these services. Each one's own privacy policy applies.</p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>What is sent</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>TMDB</strong> (themoviedb.org)</td>
+<td>Titles and years parsed from your file names; your search queries</td>
+<td>Building the library, the home screen, and search</td>
+</tr>
+<tr>
+<td><strong>Wikipedia / Wikidata</strong></td>
+<td>Titles, for Hebrew names and posters</td>
+<td>Building the library</td>
+</tr>
+<tr>
+<td><strong>Groq</strong> (api.groq.com)</td>
+<td>File names the app could not parse on its own</td>
+<td>Building the library, only if enabled at build time</td>
+</tr>
+<tr>
+<td><strong>Google Drive</strong></td>
+<td>Read-only requests for folders you add</td>
+<td>Only after you connect Drive</td>
+</tr>
+<tr>
+<td><strong>YouTube</strong> (Google)</td>
+<td>Your music search queries; video playback in the official embedded player</td>
+<td>Searching or playing YouTube</td>
+</tr>
+<tr>
+<td><strong>Deezer</strong></td>
+<td>Music search queries; 30-second preview playback</td>
+<td>Music search</td>
+</tr>
+<tr>
+<td><strong>Spotify</strong></td>
+<td>Search queries and playback commands</td>
+<td>Only after you connect Spotify</td>
+</tr>
+<tr>
+<td><strong>SubDL</strong>, <strong>LRCLIB</strong></td>
+<td>The title of what you're playing</td>
+<td>When you look for subtitles or lyrics</td>
+</tr>
+<tr>
+<td><strong>GitHub</strong></td>
+<td>A request for the latest version</td>
+<td>Checking for updates</td>
+</tr>
+</tbody>
+</table>
+<p>With <strong>Local content only</strong> (Settings) on, OmniFlux stops sending searches, and shows only what you added yourself.</p>
+<h2>YouTube API Services</h2>
+<p>OmniFlux uses <strong>YouTube API Services</strong> to search for music videos, show what's trending, and open public playlists, and it plays videos in the official embedded YouTube player. By using these features, you are also bound by the <a href="https://policies.google.com/privacy">Google Privacy Policy</a> and the <a href="https://www.youtube.com/t/terms">YouTube Terms of Service</a>.</p>
+<ul>
+<li><strong>What is sent:</strong> your YouTube search queries and the playlist links you open, sent directly from your computer to the YouTube Data API. The embedded player loads from YouTube like any YouTube embed, and YouTube may set its own cookies.</li>
+<li><strong>What is stored:</strong> search results (video IDs, titles, channel names, thumbnails and durations) are cached on your computer only, and deleted automatically after 7 days. Nothing is sent to OmniFlux or to anyone else.</li>
+<li><strong>No YouTube account access:</strong> OmniFlux does not sign in to YouTube and never accesses your YouTube account, history or private playlists.</li>
+<li><strong>Deleting it:</strong> the cache deletes itself after 7 days. To delete it immediately, close OmniFlux and delete <code>%APPDATA%\OmniFlux Player\youtube-cache.json</code>.</li>
+</ul>
+<h2>Google user data</h2>
+<p>When you connect Google Drive, OmniFlux asks for <code>drive.readonly</code>. It uses it only to list and stream the media files in folders you choose. That data is never sent anywhere except between your computer and Google, is never stored on any server, is never used for advertising, and is never shared with or sold to anyone. OmniFlux's use of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
+<p>To revoke access at any time, disconnect in Settings or go to <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>.</p>
+<h2>Children</h2>
+<p>OmniFlux is not directed at children under 13 and does not knowingly collect data from anyone.</p>
+<h2>Contact</h2>
+<p>Questions: open an issue at <a href="https://github.com/5645hm-a11y/omniflux-player/issues">github.com/5645hm-a11y/omniflux-player/issues</a>.</p>
+  </main>
+</body>
+</html>

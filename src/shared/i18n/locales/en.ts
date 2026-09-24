@@ -359,6 +359,8 @@ const en: Dict = {
     tokensTitle: 'Accounts and tokens', tokensBody: 'Spotify and Google Drive OAuth tokens and the Deezer SDK session are kept locally. Disconnecting a service removes its OmniFlux session. The app never requests a third-party password.',
     externalTitle: 'External requests', externalBody: 'Necessary searches and identifiers are sent directly to configured APIs, including TMDB, JustWatch, Google Drive, Spotify, Deezer, and LRCLIB. Their privacy policies govern those exchanges.',
     controlTitle: 'Your control', controlBody: 'You may remove Drive folders, clear local data, and disconnect Spotify, Deezer, or Google Drive. Local deletion does not erase data held by third-party services.',
+    youtubeTitle: 'YouTube', youtubeBody: 'OmniFlux uses YouTube API Services to search and play music videos. By using the YouTube features, you agree to be bound by the YouTube Terms of Service: https://www.youtube.com/t/terms',
+    youtubeDataTitle: 'YouTube API Services', youtubeDataBody: 'Your YouTube searches are sent to YouTube API Services and cached on this device and deleted automatically after 7 days. Videos play in the official YouTube player. OmniFlux does not sign in to YouTube or read your YouTube account. Google Privacy Policy: https://policies.google.com/privacy · Full policy: https://github.com/5645hm-a11y/omniflux-player/blob/main/PRIVACY.md',
     allServices: 'Availability data provided by JustWatch. This product uses the TMDB API but is not endorsed or certified by TMDB. Spotify and Deezer names, content, and trademarks belong to their respective owners.'
   },
 

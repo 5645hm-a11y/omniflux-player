@@ -2,6 +2,8 @@
 
 _Last updated: September 24, 2026_
 
+See also the [Terms of Use](TERMS.md).
+
 OmniFlux Player is a desktop app. **It has no server and no user accounts of its own, and it collects no analytics or telemetry.** Everything it stores stays on your computer, in `%APPDATA%\OmniFlux Player`.
 
 ## What stays on your computer
@@ -28,6 +30,15 @@ OmniFlux talks directly to these services. Each one's own privacy policy applies
 | **GitHub** | A request for the latest version | Checking for updates |
 
 With **Local content only** (Settings) on, OmniFlux stops sending searches, and shows only what you added yourself.
+
+## YouTube API Services
+
+OmniFlux uses **YouTube API Services** to search for music videos, show what's trending, and open public playlists, and it plays videos in the official embedded YouTube player. By using these features, you are also bound by the [Google Privacy Policy](https://policies.google.com/privacy) and the [YouTube Terms of Service](https://www.youtube.com/t/terms).
+
+- **What is sent:** your YouTube search queries and the playlist links you open, sent directly from your computer to the YouTube Data API. The embedded player loads from YouTube like any YouTube embed, and YouTube may set its own cookies.
+- **What is stored:** search results (video IDs, titles, channel names, thumbnails and durations) are cached on your computer only, and deleted automatically after 7 days. Nothing is sent to OmniFlux or to anyone else.
+- **No YouTube account access:** OmniFlux does not sign in to YouTube and never accesses your YouTube account, history or private playlists.
+- **Deleting it:** the cache deletes itself after 7 days. To delete it immediately, close OmniFlux and delete `%APPDATA%\OmniFlux Player\youtube-cache.json`.
 
 ## Google user data
 

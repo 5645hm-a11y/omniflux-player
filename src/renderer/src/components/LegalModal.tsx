@@ -3,6 +3,21 @@ import { useT } from '../i18n'
 
 export type LegalKind = 'terms' | 'privacy'
 
+/*
+ * כתובות בתוך הטקסט הופכות לקישורים. מדיניות YouTube דורשת קישור ממשי
+ * לתנאי השימוש שלה ולמדיניות הפרטיות של Google — לא רק אזכור שלהם.
+ */
+function Linked({ text }: { text: string }): React.JSX.Element {
+  const parts = text.split(/(https:\/\/\S+)/)
+  return (
+    <>
+      {parts.map((part, index) => part.startsWith('https://')
+        ? <a key={index} href={part} onClick={(event) => { event.preventDefault(); void window.cinema.search.openExternal(part) }} className="break-all text-violet underline-offset-2 hover:underline">{part}</a>
+        : part)}
+    </>
+  )
+}
+
 export function LegalModal({ kind, onClose }: { kind: LegalKind; onClose: () => void }): React.JSX.Element {
   const t = useT()
   const sections = kind === 'terms'
@@ -10,12 +25,14 @@ export function LegalModal({ kind, onClose }: { kind: LegalKind; onClose: () => 
         [t('legal.personalUseTitle'), t('legal.personalUseBody')],
         [t('legal.cacheTitle'), t('legal.cacheBody')],
         [t('legal.thirdPartyTitle'), t('legal.thirdPartyBody')],
+        [t('legal.youtubeTitle'), t('legal.youtubeBody')],
         [t('legal.availabilityTitle'), t('legal.availabilityBody')]
       ]
     : [
         [t('legal.localDataTitle'), t('legal.localDataBody')],
         [t('legal.tokensTitle'), t('legal.tokensBody')],
         [t('legal.externalTitle'), t('legal.externalBody')],
+        [t('legal.youtubeDataTitle'), t('legal.youtubeDataBody')],
         [t('legal.controlTitle'), t('legal.controlBody')]
       ]
   const title = t(kind === 'terms' ? 'legal.terms' : 'legal.privacy')
@@ -27,7 +44,7 @@ export function LegalModal({ kind, onClose }: { kind: LegalKind; onClose: () => 
           <div className="min-w-0 flex-1"><h2 id="legal-title" className="font-display text-[28px] font-extrabold">{title}</h2><p className="mt-1 text-[12px] text-ink-3">{t('legal.effective')}</p></div>
           <IconButton icon="close" label={t('nav.close')} onClick={onClose} />
         </header>
-        <div className="space-y-6">{sections.map(([heading, body]) => <section key={heading}><h3 className="mb-2 text-[14px] font-bold text-ink">{heading}</h3><p className="max-w-prose text-[13px] leading-7 text-ink-2">{body}</p></section>)}</div>
+        <div className="space-y-6">{sections.map(([heading, body]) => <section key={heading}><h3 className="mb-2 text-[14px] font-bold text-ink">{heading}</h3><p className="max-w-prose text-[13px] leading-7 text-ink-2"><Linked text={body} /></p></section>)}</div>
         <div className="mt-8 border-t border-ink/10 pt-5"><p className="text-[11.5px] leading-6 text-ink-3">{t('legal.allServices')}</p><Button className="mt-5" variant="outline" size="sm" onClick={onClose}>{t('nav.close')}</Button></div>
       </section>
     </div>

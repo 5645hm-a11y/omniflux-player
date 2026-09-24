@@ -681,6 +681,7 @@ app.on('child-process-gone', (_e, details) => {
 })
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 app.whenReady().then(async () => {
+  youtube.prune()
   // CastLabs registers Widevine with Chromium while components.whenReady() runs.
   // It should finish before the first BrowserWindow is created; waiting only when
   // the hidden Spotify surface was opened left Chromium with no EME key system.

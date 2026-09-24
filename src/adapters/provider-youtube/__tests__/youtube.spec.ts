@@ -150,3 +150,22 @@ test('רעש בלי סוגריים, כתיב בריטי, ושם ואמן בסד�
   // כשהחלק השני אינו הערוץ — הסדר הרגיל נשמר
   expect(cleanTitle('Coldplay - Yellow', 'ColdplayVEVO')).toEqual({ artist: 'Coldplay', title: 'Yellow' })
 })
+
+test('נתוני YouTube נמחקים אחרי 7 ימים — גם מהדיסק, וגם כשהמכסה נגמרה', async () => {
+  let clock = Date.UTC(2026, 8, 1, 12)
+  const ok = fakeYouTube()
+  const { yt, cache } = provider(ok.http, () => clock)
+  await yt.search('coldplay')
+  expect(Object.keys(cache.read()).length).toBe(1)
+
+  // שמונה ימים אחר כך, והמכסה נגמרה: רשימה ישנה אינה מוגשת במקום ריק
+  clock += 8 * 24 * 60 * 60 * 1000
+  const exhausted = provider(fakeYouTube({ quotaExceeded: true }).http, () => clock)
+  exhausted.cache.write(cache.read())
+  const result = await exhausted.yt.search('coldplay')
+  expect(result.tracks).toEqual([])
+
+  // ובהפעלה — נמחקים מהקובץ עצמו
+  exhausted.yt.prune()
+  expect(exhausted.cache.read()).toEqual({})
+})

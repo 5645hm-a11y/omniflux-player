@@ -119,4 +119,4 @@ OmniFlux is licensed under the [GNU General Public License v3.0](LICENSE).
 
 It bundles [mpv](https://mpv.io) (GPL), run as a separate process. Its license ships with every install in `resources/engine/LICENSES`.
 
-<sub>This product uses the TMDB API but is not endorsed or certified by TMDB. Netflix, Prime Video, Disney+, Max, Spotify, YouTube, Deezer and Google Drive are trademarks of their respective owners; OmniFlux is not affiliated with or endorsed by them. See the [privacy policy](PRIVACY.md).</sub>
+<sub>This product uses the TMDB API but is not endorsed or certified by TMDB. Netflix, Prime Video, Disney+, Max, Spotify, YouTube, Deezer and Google Drive are trademarks of their respective owners; OmniFlux is not affiliated with or endorsed by them. See the [privacy policy](PRIVACY.md) and [terms of use](TERMS.md).</sub>

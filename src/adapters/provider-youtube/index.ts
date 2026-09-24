@@ -26,6 +26,11 @@ const MUSIC_CATEGORY = '10'
 export const DAILY_SEARCHES = 15
 const DAY_MS = 24 * 60 * 60 * 1000
 const TTL = { search: 7 * DAY_MS, trending: 6 * 60 * 60 * 1000, playlist: 60 * 60 * 1000 }
+/*
+ * מדיניות YouTube: נתוני API לא נשמרים יותר מ-30 יום. אנחנו מוחקים אחרי 7 —
+ * גם מהדיסק, ולא רק מתעלמים — וגם "ישן עדיף מריק" אינו חוצה את הגבול.
+ */
+const KEEP_MS = 7 * DAY_MS
 const MAX_PLAYLIST_ITEMS = 200
 
 export interface CacheEntry {
@@ -319,11 +324,20 @@ export class YouTubeProvider {
 
   /** מה שנשמר, גם אם ישן — עדיף רשימה מאתמול מאשר מסך ריק כשהמכסה נגמרה */
   private stale(key: string): YouTubeTrack[] {
-    return this.opts.cache.read()[key]?.tracks ?? []
+    const entry = this.opts.cache.read()[key]
+    return entry && this.now() - entry.at < KEEP_MS ? entry.tracks : []
+  }
+
+  /** מוחק מהדיסק כל מה שעבר את תקופת השמירה */
+  prune(): void {
+    const all = this.opts.cache.read()
+    const fresh = Object.fromEntries(Object.entries(all).filter(([, entry]) => this.now() - entry.at < KEEP_MS))
+    if (Object.keys(fresh).length !== Object.keys(all).length) this.opts.cache.write(fresh)
   }
 
   private store(key: string, entry: CacheEntry): void {
     const all = { ...this.opts.cache.read(), [key]: entry }
+    for (const [k, e] of Object.entries(all)) if (this.now() - e.at >= KEEP_MS) delete all[k]
     // תקרה: 300 רשומות, הישנות יוצאות ראשונות
     const keys = Object.keys(all).sort((a, b) => all[b].at - all[a].at)
     for (const old of keys.slice(300)) delete all[old]

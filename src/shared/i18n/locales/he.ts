@@ -359,6 +359,8 @@ const he: Dict = {
     tokensTitle: 'חשבונות ואסימונים', tokensBody: 'אסימוני OAuth של Spotify ו־Google Drive והפעלת ה־SDK של Deezer נשמרים מקומית. ניתוק שירות מוחק את ההפעלה שלו מ־OmniFlux. האפליקציה אינה מבקשת סיסמה של שירות חיצוני.',
     externalTitle: 'בקשות חיצוניות', externalBody: 'חיפושים ומזהים נחוצים נשלחים ישירות ל־TMDB, JustWatch, Google Drive, Spotify, Deezer ו־LRCLIB. מדיניות הפרטיות של כל שירות חלה על העיבוד שלו.',
     controlTitle: 'שליטה', controlBody: 'אפשר להסיר תיקיות Drive, למחוק נתונים מקומיים ולנתק את Spotify, Deezer או Google Drive. מחיקה מקומית אינה מוחקת מידע שמוחזק אצל שירותי צד שלישי.',
+    youtubeTitle: 'YouTube', youtubeBody: '‏OmniFlux משתמש בשירותי ה-API של YouTube לחיפוש ולניגון קטעי מוזיקה. השימוש ביכולות YouTube מהווה הסכמה לתנאי השימוש של YouTube: https://www.youtube.com/t/terms',
+    youtubeDataTitle: 'שירותי ה-API של YouTube', youtubeDataBody: 'החיפושים שלך ב-YouTube נשלחים לשירותי ה-API של YouTube ונשמרים במטמון במכשיר הזה, ונמחקים אוטומטית אחרי 7 ימים. הסרטונים מתנגנים בנגן הרשמי של YouTube. ‏OmniFlux אינו מתחבר לחשבון YouTube שלך. מדיניות הפרטיות של Google: https://policies.google.com/privacy · המדיניות המלאה: https://github.com/5645hm-a11y/omniflux-player/blob/main/PRIVACY.md',
     allServices: 'נתוני זמינות מסופקים על ידי JustWatch. מוצר זה משתמש ב־TMDB API אך אינו מאושר או מוסמך על ידי TMDB. השמות, התכנים והסימנים של Spotify ו־Deezer שייכים לבעליהם.'
   },
 

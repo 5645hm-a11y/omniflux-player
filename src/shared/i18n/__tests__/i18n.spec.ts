@@ -81,7 +81,7 @@ test('השפות שאינן לטיניות תורגמו במלואן', () => {
   // בעברית ובערבית אין קוגנטים עם צרפתית, ולכן כאן ההשוואה מוחלטת
   // שמות מותג זהים בכל שפה בכוונה, ואינם עדות לתרגום חסר
   // ‏"R&B" הוא שם הז'אנר גם בעברית, כמו שם מותג — אין לו תרגום
-  const skip = new Set(['library.drivePlaceholder', 'library.drive', 'spotify.title', 'music.genreRnb', 'music.sourceDeezer', 'music.sourceSpotify', 'music.sourceYouTube', 'music.sourceDrive'])
+  const skip = new Set(['library.drivePlaceholder', 'library.drive', 'spotify.title', 'music.genreRnb', 'music.sourceDeezer', 'music.sourceSpotify', 'music.sourceYouTube', 'music.sourceDrive', 'legal.youtubeTitle'])
   for (const code of ['he', 'ar'] as LocaleCode[]) {
     const same = base.filter(
       (k) => !skip.has(k) && valueAt(DICTS[code], k) === valueAt(DICTS[DEFAULT_LOCALE], k)
